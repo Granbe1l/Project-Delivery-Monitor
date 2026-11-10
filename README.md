@@ -2,7 +2,7 @@
 
 A read-only software delivery dashboard for public GitHub repositories. Review observed issues, pull requests, workflow runs, and milestones; understand why an item needs attention; open the original evidence.
 
-**Status:** live GitHub access and manual collection are verified for Streamlit, Airflow and Next.js in the published cloud environment. The React dashboard displays actual PostgreSQL observations. Large sources remain explicitly partial because of the two-page collection budget. No public deployment or periodic scheduler has been activated. See [live validation](docs/LIVE_VALIDATION.md) and [preview instructions](docs/PREVIEW.md).
+**Status:** live GitHub access and manual collection are verified for Streamlit, Airflow and Next.js in the published cloud environment. The React dashboard displays actual PostgreSQL observations. Large sources remain explicitly partial because of the two-page collection budget. No public deployment or periodic scheduler has been activated. See the [latest audit](docs/AUDIT_REPORT.md), [initial live validation](docs/LIVE_VALIDATION.md), and [preview instructions](docs/PREVIEW.md).
 
 ![Actual dashboard with verified GitHub observations](docs/screenshots/overview-live-desktop.png)
 
@@ -13,7 +13,7 @@ A read-only software delivery dashboard for public GitHub repositories. Review o
 - GitHub REST collector with validated evidence URLs, pagination, request budgets, bounded retries, rate-limit handling, and a public repository allowlist.
 - PostgreSQL normalized records, Alembic migrations, upserts, per-repository advisory locks, sync logs, observation snapshots, and retained data after refresh failures.
 - Deterministic PR age/inactivity, repeated CI failure, milestone due-date, and freshness rules. Findings expose evidence, time, policy version, interpretation limits, and a suggested next step.
-- Text export of the Project Intelligence Brief, available only when observations exist. PDF export is deferred.
+- A readable text brief with freshness, source coverage, and three evidence-backed findings; the dashboard retains the complete list. Milestones have page navigation. PDF export is deferred.
 
 ## Run locally
 
@@ -66,12 +66,20 @@ npm test
 npm run build
 # With the app running AFTER real sync (Streamlit needs at least two observations):
 PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/chromium npm run test:e2e:live
-# On a separate unseeded app database, the original empty-state regression suite:
+# Regression states use isolated browser fixtures and work with a populated app DB:
 PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/chromium npm run test:e2e
 # Or install Playwright Chromium on your machine: npx playwright install chromium
 ```
 
-Backend tests use synthetic **TEST DATA** from `backend/tests/fixtures` in a separate `pdm_test` database; browser mocks use `frontend/tests/fixtures`. No test records are inserted into the app database. The browser suite checks the real, unseeded application plus a simulated API outage, then a clearly isolated TEST DATA flow for search, pagination and report export. Its original real-API smoke deliberately expects unavailable GitHub data. The separate `test:e2e:live` suite uses the actual API without mocks, checks dashboard values against stored observations for all three projects, exercises real records and report export, and captures live screenshots. Do not clear collected data to run the empty-state suite.
+Backend tests use synthetic **TEST DATA** from `backend/tests/fixtures` in the separate `pdm_test` database. Browser regression states use `frontend/tests/fixtures`, intercepting only their own test page's requests. No test data is inserted into the app database and no real observations are cleared. The `test:e2e:live` suite uses the actual API without mocks for all six views, filters, pagination, source links, history, export and screenshots. It also runs automated accessibility checks at desktop/mobile widths; that is not a complete accessibility certification.
+
+To compare stored samples with their GitHub source again, run from `backend/`:
+
+```bash
+.venv/bin/python ../scripts/verify_sources.py --output ../docs/evidence/source-recheck.json
+```
+
+A mutable upstream title/status may change after collection. A mismatch is reported, not silently substituted into stored observations.
 
 ## Architecture
 

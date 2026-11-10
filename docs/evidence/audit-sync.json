@@ -1,0 +1,155 @@
+[
+  {
+    "repository": "streamlit/streamlit",
+    "status": "partial",
+    "rows": 525,
+    "endpoints": {
+      "repository": {
+        "http_status": 200,
+        "coverage": "complete"
+      },
+      "issues": {
+        "pages": 2,
+        "coverage": "partial",
+        "http_status": 200,
+        "error": null,
+        "rate_remaining": "14985",
+        "rate_reset": "1794352165",
+        "retry_after": null,
+        "observed_at": "2026-11-10T22:59:56.225366+00:00"
+      },
+      "pulls": {
+        "pages": 2,
+        "coverage": "complete",
+        "http_status": 200,
+        "error": null,
+        "rate_remaining": "14983",
+        "rate_reset": "1794352165",
+        "retry_after": null,
+        "observed_at": "2026-11-10T22:59:56.225366+00:00"
+      },
+      "workflows": {
+        "pages": 2,
+        "coverage": "partial",
+        "http_status": 200,
+        "error": null,
+        "rate_remaining": "14981",
+        "rate_reset": "1794352165",
+        "retry_after": null,
+        "observed_at": "2026-11-10T22:59:56.225366+00:00"
+      },
+      "milestones": {
+        "pages": 1,
+        "coverage": "complete",
+        "http_status": 200,
+        "error": null,
+        "rate_remaining": "14980",
+        "rate_reset": "1794352165",
+        "retry_after": null,
+        "observed_at": "2026-11-10T22:59:56.225366+00:00"
+      }
+    }
+  },
+  {
+    "repository": "apache/airflow",
+    "status": "partial",
+    "rows": 566,
+    "endpoints": {
+      "repository": {
+        "http_status": 200,
+        "coverage": "complete"
+      },
+      "issues": {
+        "pages": 2,
+        "coverage": "partial",
+        "http_status": 200,
+        "error": null,
+        "rate_remaining": "14977",
+        "rate_reset": "1794352165",
+        "retry_after": null,
+        "observed_at": "2026-11-10T23:00:07.110970+00:00"
+      },
+      "pulls": {
+        "pages": 2,
+        "coverage": "partial",
+        "http_status": 200,
+        "error": null,
+        "rate_remaining": "14975",
+        "rate_reset": "1794352165",
+        "retry_after": null,
+        "observed_at": "2026-11-10T23:00:07.110970+00:00"
+      },
+      "workflows": {
+        "pages": 2,
+        "coverage": "partial",
+        "http_status": 200,
+        "error": null,
+        "rate_remaining": "14973",
+        "rate_reset": "1794352165",
+        "retry_after": null,
+        "observed_at": "2026-11-10T23:00:07.110970+00:00"
+      },
+      "milestones": {
+        "pages": 2,
+        "coverage": "complete",
+        "http_status": 200,
+        "error": null,
+        "rate_remaining": "14971",
+        "rate_reset": "1794352165",
+        "retry_after": null,
+        "observed_at": "2026-11-10T23:00:07.110970+00:00"
+      }
+    }
+  },
+  {
+    "repository": "vercel/next.js",
+    "status": "partial",
+    "rows": 475,
+    "endpoints": {
+      "repository": {
+        "http_status": 200,
+        "coverage": "complete"
+      },
+      "issues": {
+        "pages": 2,
+        "coverage": "partial",
+        "http_status": 200,
+        "error": null,
+        "rate_remaining": "14968",
+        "rate_reset": "1794352165",
+        "retry_after": null,
+        "observed_at": "2026-11-10T23:00:18.763378+00:00"
+      },
+      "pulls": {
+        "pages": 2,
+        "coverage": "partial",
+        "http_status": 200,
+        "error": null,
+        "rate_remaining": "14966",
+        "rate_reset": "1794352165",
+        "retry_after": null,
+        "observed_at": "2026-11-10T23:00:18.763378+00:00"
+      },
+      "workflows": {
+        "pages": 2,
+        "coverage": "partial",
+        "http_status": 200,
+        "error": null,
+        "rate_remaining": "14964",
+        "rate_reset": "1794352165",
+        "retry_after": null,
+        "observed_at": "2026-11-10T23:00:18.763378+00:00"
+      },
+      "milestones": {
+        "pages": 1,
+        "coverage": "complete",
+        "http_status": 200,
+        "error": null,
+        "rate_remaining": "14963",
+        "rate_reset": "1794352165",
+        "retry_after": null,
+        "observed_at": "2026-11-10T23:00:18.763378+00:00"
+      }
+    }
+  }
+]

@@ -157,3 +157,133 @@ test("live UI desktop and mobile screenshots, with no browser errors or overflow
   ).toBe(true);
   expect(errors).toEqual([]);
 });
+
+test("all six live views, creation-period filters, CI branches and milestone pagination", async ({
+  page,
+  request,
+}) => {
+  const projects: Project[] = await (await request.get("/api/projects")).json();
+  const project = projects.find((p) => p.full_name === "apache/airflow")!;
+  await page.goto(`/overview?project=${project.id}`);
+  for (const [path, title] of [
+    ["details", "Project details"],
+    ["issues", "Issues & backlog"],
+    ["pulls", "Pull request review"],
+    ["ci", "CI/CD activity"],
+    ["risks", "Risks & recommendations"],
+    ["overview", "Delivery at a glance"],
+  ]) {
+    await page.locator(`nav a[href^="/${path}"]`).click();
+    await expect(
+      page.getByRole("heading", { name: title, exact: true }),
+    ).toBeVisible();
+    await expect(page.locator('[role="alert"]')).toHaveCount(0);
+  }
+  await page.locator('nav a[href^="/issues"]').click();
+  const issues: Page = await (
+    await request.get(`/api/projects/${project.id}/issues?period=7`)
+  ).json();
+  await page.getByLabel("Created within").selectOption("7");
+  await expect(
+    page.getByText(`${issues.total_in_observation} matching collected records`),
+  ).toBeVisible();
+  await page.getByLabel("Search titles").fill("pdm-no-matching-title-8fe72cc3");
+  await expect(
+    page.getByRole("heading", { name: "No matching records" }),
+  ).toBeVisible();
+  await page.locator('nav a[href^="/ci"]').click();
+  const ci: Page = await (
+    await request.get(
+      `/api/projects/${project.id}/ci?period=7&branch=${encodeURIComponent(project.default_branch!)}`,
+    )
+  ).json();
+  await page.getByLabel("Created within").selectOption("7");
+  await page
+    .getByRole("textbox", { name: "Branch", exact: true })
+    .fill(project.default_branch!);
+  await expect(
+    page.getByText(`${ci.total_in_observation} matching collected records`),
+  ).toBeVisible();
+  if (ci.items.length)
+    await expect(page.locator("tbody tr").first()).toContainText(
+      ci.items[0].branch!,
+    );
+  await page
+    .getByRole("textbox", { name: "Branch", exact: true })
+    .fill("pdm-nonexistent-branch-8fe72cc3");
+  await expect(
+    page.getByRole("heading", { name: "No matching records" }),
+  ).toBeVisible();
+  await page.locator('nav a[href^="/details"]').click();
+  const second: Page = await (
+    await request.get(
+      `/api/projects/${project.id}/milestones?page_size=10&page=2`,
+    )
+  ).json();
+  expect(second.items.length).toBeGreaterThan(0);
+  await page.getByRole("button", { name: "Next milestone page" }).click();
+  await expect(page.locator(".milestone h3").first()).toHaveText(
+    second.items[0].title!,
+  );
+  await page
+    .getByLabel("Monitoring")
+    .selectOption({ label: "streamlit/streamlit" });
+  await expect(
+    page.getByRole("button", { name: "Previous milestone page" }),
+  ).toBeDisabled();
+});
+
+for (const viewport of [
+  { width: 1440, height: 1000 },
+  { width: 390, height: 844 },
+]) {
+  test(`live accessibility checks on all six views at ${viewport.width}px`, async ({
+    page,
+  }) => {
+    const { default: AxeBuilder } = await import("@axe-core/playwright");
+    await page.setViewportSize(viewport);
+    for (const route of [
+      "overview",
+      "details",
+      "issues",
+      "pulls",
+      "ci",
+      "risks",
+    ]) {
+      await page.goto(`/${route}?project=1`);
+      await expect(page.locator(".skeleton")).toHaveCount(0);
+      await expect(page.locator("h1")).toBeVisible();
+      const results = await new AxeBuilder({ page })
+        .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+        .analyze();
+      expect(
+        results.violations.map((v) => ({
+          rule: v.id,
+          impact: v.impact,
+          description: v.description,
+          nodes: v.nodes.map((n) => ({
+            target: n.target,
+            summary: n.failureSummary,
+          })),
+        })),
+        route,
+      ).toEqual([]);
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
+        ),
+      ).toBe(true);
+    }
+    await page.goto("/overview?project=1");
+    await page.keyboard.press("Tab");
+    await expect(
+      page.getByRole("link", { name: "Skip to content" }),
+    ).toBeFocused();
+    if (viewport.width === 390) {
+      await page.keyboard.press("Tab");
+      await expect(
+        page.getByRole("button", { name: "Toggle navigation" }),
+      ).toBeFocused();
+    }
+  });
+}

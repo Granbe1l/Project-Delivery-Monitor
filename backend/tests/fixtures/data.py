@@ -74,3 +74,25 @@ def repository():
         default_branch="main",
         html_url="https://github.com/streamlit/streamlit",
     )
+
+
+def at_observation_time(data, reference):
+    """Move synthetic integration input dates together, preserving their relative ages."""
+    if isinstance(data, list):
+        return [at_observation_time(value, reference) for value in data]
+    if isinstance(data, dict):
+        timestamps = {
+            "created_at",
+            "updated_at",
+            "closed_at",
+            "merged_at",
+            "run_started_at",
+            "due_on",
+        }
+        return {
+            key: (datetime.fromisoformat(value) + (reference - NOW)).isoformat()
+            if key in timestamps and value is not None
+            else at_observation_time(value, reference)
+            for key, value in data.items()
+        }
+    return data

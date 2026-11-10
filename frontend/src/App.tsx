@@ -1,3 +1,4 @@
+import { formatBrief, historyCoverage } from "./brief";
 import { useState } from "react";
 import {
   NavLink,
@@ -120,7 +121,7 @@ export function Metric({
     <article className="metric">
       <div>
         {label}
-        <span title={help} tabIndex={0} aria-label={help}>
+        <span role="img" title={help} tabIndex={0} aria-label={help}>
           <CircleHelp size={14} />
         </span>
       </div>
@@ -188,7 +189,7 @@ export default function App() {
       <a href="#content" className="skip">
         Skip to content
       </a>
-      <aside className={menu ? "sidebar open" : "sidebar"}>
+      <aside id="sidebar" className={menu ? "sidebar open" : "sidebar"}>
         <a className="brand" href="/overview">
           <span className="brand-mark">
             <GitBranch size={25} />
@@ -230,6 +231,7 @@ export default function App() {
             onClick={() => setMenu(!menu)}
             aria-label="Toggle navigation"
             aria-expanded={menu}
+            aria-controls="sidebar"
           >
             <Menu />
           </button>
@@ -323,7 +325,7 @@ export default function App() {
                   />
                   <Route
                     path="/details"
-                    element={<Details info={info.data} />}
+                    element={<Details key={selected.id} info={info.data} />}
                   />
                   <Route
                     path="/issues"
@@ -390,13 +392,15 @@ function OverviewPage({ info, suffix }: { info: Overview; suffix: string }) {
           value={
             info.status === "unavailable"
               ? "awaiting data"
-              : Object.values(info.coverage).some(
-                    (c) => c.coverage !== "complete",
-                  )
-                ? "partial coverage"
-                : info.stale
-                  ? "stale"
-                  : "observed"
+              : Object.values(info.coverage).some((c) => c.retained)
+                ? "retained data"
+                : Object.values(info.coverage).some(
+                      (c) => c.coverage !== "complete",
+                    )
+                  ? "partial coverage"
+                  : info.stale
+                    ? "stale"
+                    : "observed"
           }
         />
       </div>
@@ -543,14 +547,17 @@ function CoveragePanel({ info }: { info: Overview }) {
   );
 }
 function Details({ info }: { info: Overview }) {
+  const [milestonePage, setMilestonePage] = useState(1);
   const trends = useQuery({
     queryKey: ["trends", info.project.id],
     queryFn: () => api<Trends>(`/projects/${info.project.id}/trends`),
   });
   const milestones = useQuery({
-    queryKey: ["milestones", info.project.id],
+    queryKey: ["milestones", info.project.id, milestonePage],
     queryFn: () =>
-      api<Page>(`/projects/${info.project.id}/milestones?page_size=100`),
+      api<Page>(
+        `/projects/${info.project.id}/milestones?page_size=10&page=${milestonePage}`,
+      ),
   });
   return (
     <>
@@ -601,7 +608,12 @@ function Details({ info }: { info: Overview }) {
           />
         ) : (
           <>
-            <div className="table-wrap">
+            <div
+              className="table-wrap"
+              role="region"
+              aria-label="Observation history table"
+              tabIndex={0}
+            >
               <table>
                 <thead>
                   <tr>
@@ -617,13 +629,7 @@ function Details({ info }: { info: Overview }) {
                       <td>{timestamp(p.observed_at)}</td>
                       <td>{p.metrics.open_issues ?? "Unavailable"}</td>
                       <td>{p.metrics.open_prs ?? "Unavailable"}</td>
-                      <td>
-                        {Object.values(p.coverage).every(
-                          (c) => c.coverage === "complete",
-                        )
-                          ? "Complete"
-                          : "Partial — not directly comparable"}
-                      </td>
+                      <td>{historyCoverage(p.coverage)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -676,6 +682,31 @@ function Details({ info }: { info: Overview }) {
               {milestones.data.total_in_observation} collected milestones.{" "}
               {milestones.data.coverage} source coverage.
             </p>
+            <div className="pagination">
+              <span>
+                Page {milestonePage} · observed{" "}
+                {timestamp(milestones.data.observed_at)}
+              </span>
+              <div>
+                <button
+                  aria-label="Previous milestone page"
+                  disabled={milestonePage === 1}
+                  onClick={() => setMilestonePage(milestonePage - 1)}
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                <button
+                  aria-label="Next milestone page"
+                  disabled={
+                    milestonePage * milestones.data.page_size >=
+                    milestones.data.total_in_observation
+                  }
+                  onClick={() => setMilestonePage(milestonePage + 1)}
+                >
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            </div>
           </>
         ) : (
           <Empty
@@ -846,7 +877,12 @@ function Records({
                   }
                 />
               ) : (
-                <div className="table-wrap">
+                <div
+                  className="table-wrap"
+                  role="region"
+                  aria-label={`${title} records`}
+                  tabIndex={0}
+                >
                   <table>
                     <thead>
                       <tr>
@@ -954,22 +990,7 @@ function Risks({ info }: { info: Overview }) {
   const [filter, setFilter] = useState("all");
   function download() {
     if (!brief.data) return;
-    const b = brief.data;
-    const content = [
-      b.title,
-      b.overview.project.full_name,
-      `Observed: ${timestamp(b.overview.observed_at)}`,
-      b.overview.scope,
-      JSON.stringify(b.overview.metrics, null, 2),
-      "COVERAGE",
-      JSON.stringify(b.overview.coverage, null, 2),
-      ...b.findings.map(
-        (f) =>
-          `${f.observation}\nWhy: ${f.explanation}\nSuggested action: ${f.recommendation}\nEvidence: ${f.evidence_url}\nObserved: ${f.observed_at}\nRule: ${f.rule_id} v${f.rule_version}\nLimitations: ${f.limitations}`,
-      ),
-      "LIMITATIONS",
-      ...b.limitations,
-    ].join("\n\n");
+    const content = formatBrief(brief.data);
     const url = URL.createObjectURL(
       new Blob([content], { type: "text/plain;charset=utf-8" }),
     );

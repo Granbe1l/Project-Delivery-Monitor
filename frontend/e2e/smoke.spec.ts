@@ -1,8 +1,50 @@
 import { test, expect } from "@playwright/test";
 
-test("real local API: empty states, routes, selection and mobile layout", async ({
+test("TEST DATA only: empty states, routes, selection and mobile layout", async ({
   page,
 }) => {
+  const { default: empty } = await import(
+    "../tests/fixtures/empty-dashboard.json",
+    { with: { type: "json" } }
+  );
+  await page.route("**/api/**", async (route) => {
+    const path = new URL(route.request().url()).pathname;
+    const project =
+      empty.projects.find((p) => path.includes(`/projects/${p.id}/`)) ??
+      empty.projects[0];
+    if (path === "/api/projects")
+      return route.fulfill({ json: empty.projects });
+    if (path.endsWith("/overview"))
+      return route.fulfill({ json: { ...empty.overview, project } });
+    if (path.endsWith("/findings")) return route.fulfill({ json: [] });
+    if (path.endsWith("/brief"))
+      return route.fulfill({
+        json: {
+          title: "TEST DATA brief",
+          overview: { ...empty.overview, project },
+          findings: [],
+          limitations: [],
+        },
+      });
+    if (path.endsWith("/trends"))
+      return route.fulfill({
+        json: {
+          status: "insufficient_data",
+          points: [],
+          limitation: "TEST DATA",
+        },
+      });
+    return route.fulfill({
+      json: {
+        items: [],
+        total_in_observation: 0,
+        page: 1,
+        page_size: 25,
+        coverage: "unavailable",
+        observed_at: null,
+      },
+    });
+  });
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/overview");
@@ -31,13 +73,6 @@ test("real local API: empty states, routes, selection and mobile layout", async 
     page.getByRole("button", { name: "Export brief (.txt)" }),
   ).toHaveCount(0);
   await page.goto("/overview");
-  await page.screenshot({
-    path: new URL(
-      "../../docs/screenshots/overview-desktop.png",
-      import.meta.url,
-    ).pathname,
-    fullPage: true,
-  });
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(
     page.getByRole("button", { name: "Toggle navigation" }),
@@ -52,11 +87,6 @@ test("real local API: empty states, routes, selection and mobile layout", async 
       () => document.documentElement.scrollWidth <= window.innerWidth,
     ),
   ).toBe(true);
-  await page.screenshot({
-    path: new URL("../../docs/screenshots/issues-mobile.png", import.meta.url)
-      .pathname,
-    fullPage: true,
-  });
   expect(errors).toEqual([]);
 });
 
@@ -153,4 +183,72 @@ test("TEST DATA only: populated search, pagination, evidence and brief export", 
   await expect(
     page.getByRole("heading", { name: "No matching findings" }),
   ).toBeVisible();
+});
+
+test("TEST DATA only: stale and retained sources preserve warnings, scope and export metadata", async ({
+  page,
+}) => {
+  const { default: fixture } = await import(
+    "../tests/fixtures/dashboard.json",
+    { with: { type: "json" } }
+  );
+  const overview = structuredClone(fixture.overview);
+  overview.stale = true;
+  overview.status = "stale";
+  overview.last_attempt_status = "failure";
+  const coverage = {
+    ...overview.coverage,
+    pulls: {
+      ...overview.coverage.pulls,
+      retained: true,
+      observed_at: "2026-10-01T00:00:00Z",
+    },
+  };
+  const info = { ...overview, coverage };
+  await page.route("**/api/**", (route) => {
+    const path = new URL(route.request().url()).pathname;
+    if (path === "/api/projects")
+      return route.fulfill({ json: [fixture.project] });
+    if (path.endsWith("/overview")) return route.fulfill({ json: info });
+    if (path.endsWith("/findings"))
+      return route.fulfill({ json: fixture.findings });
+    if (path.endsWith("/trends"))
+      return route.fulfill({
+        json: {
+          status: "available",
+          points: [
+            { observed_at: info.observed_at, metrics: info.metrics, coverage },
+          ],
+          limitation: "TEST DATA: retained scope",
+        },
+      });
+    if (path.endsWith("/milestones"))
+      return route.fulfill({
+        json: {
+          items: [],
+          total_in_observation: 0,
+          page: 1,
+          page_size: 10,
+          coverage: "complete",
+          observed_at: info.observed_at,
+        },
+      });
+    return route.fulfill({
+      status: 404,
+      json: { detail: "Unexpected fixture endpoint" },
+    });
+  });
+  await page.goto("/overview");
+  await expect(page.locator(".notice")).toContainText(
+    "This observation is stale",
+  );
+  await expect(page.locator(".notice")).toContainText(
+    "last successful observations",
+  );
+  await expect(page.locator(".metric strong").nth(1)).toHaveText("26");
+  await expect(page.getByText("retained · refresh failed")).toBeVisible();
+  await page.locator('nav a[href^="/details"]').click();
+  await expect(page.locator("table tbody")).toContainText(
+    "Retained data — mixed observation times",
+  );
 });

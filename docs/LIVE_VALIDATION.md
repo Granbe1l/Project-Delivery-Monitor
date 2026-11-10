@@ -1,4 +1,6 @@
-# Live GitHub and application validation
+# Initial live GitHub and application validation
+
+This records the first live collection. See [AUDIT_REPORT.md](AUDIT_REPORT.md) for the later recovery/refresh, fixes, final test counts and current screenshots.
 
 Verified **11 November 2026, approximately 01:39–01:43 WIB (Asia/Jakarta)**. Evidence files retain the source/collector UTC timestamps. The user published a new cloud environment with `api.github.com` and `docs.github.com` allowed; this report uses that new instance, not the earlier blocked machine.
 

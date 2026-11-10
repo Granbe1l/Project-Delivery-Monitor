@@ -1,6 +1,6 @@
 # Initial verification evidence
 
-This is the historical pre-publication report. The network blocker described below has since been resolved. See [LIVE_VALIDATION.md](LIVE_VALIDATION.md) for current source checks, data counts and new browser tests.
+This is the historical pre-publication report. The network blocker described below has since been resolved. See [LIVE_VALIDATION.md](LIVE_VALIDATION.md) for the first live source checks and [AUDIT_REPORT.md](AUDIT_REPORT.md) for the latest full audit.
 
 Verified on **11 November 2026, Asia/Jakarta** (execution timestamps were recorded in UTC on 10 November). This report distinguishes implementation tests from live-source verification. No checks were skipped in the executed test suites.
 

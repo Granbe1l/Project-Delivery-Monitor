@@ -12,7 +12,7 @@ from app.db.session import get_db
 from app.main import app
 from app.models.entities import Base, Issue, PullRequest, Snapshot, SyncRun
 from app.services.sync import synchronize
-from tests.fixtures.data import issue, milestone, pull, repository, workflow
+from tests.fixtures.data import at_observation_time, issue, milestone, pull, repository, workflow
 
 
 @pytest.fixture
@@ -34,6 +34,8 @@ def db():
 
 
 def transport(fail=None, partial=False):
+    reference = datetime.now(UTC)
+
     def handler(r):
         endpoint = r.url.path.split("/")[-1]
         if endpoint == fail or fail == "all":
@@ -50,7 +52,7 @@ def transport(fail=None, partial=False):
             if partial and endpoint == "issues"
             else {}
         )
-        return httpx.Response(200, json=data, headers=headers)
+        return httpx.Response(200, json=at_observation_time(data, reference), headers=headers)
 
     return httpx.MockTransport(handler)
 
@@ -166,3 +168,57 @@ async def test_repository_lock_prevents_overlapping_sync(db):
         result = await sync(db)
         assert result["status"] == "busy"
         other.rollback()
+
+
+async def test_freshness_points_to_old_retained_endpoint(db, api_client):
+    from app.models.entities import Finding
+
+    await sync(db)
+    snap = db.scalar(select(Snapshot))
+    old = datetime.now(UTC) - timedelta(days=2)
+    snap.coverage = {
+        **snap.coverage,
+        "pulls": {**snap.coverage["pulls"], "observed_at": old.isoformat()},
+    }
+    db.scalar(select(PullRequest)).last_seen_at = old
+    for row in db.scalars(select(Finding).where(Finding.subject_type == "pull_request")):
+        row.observed_at = old
+    db.commit()
+    await sync(db, fail="pulls")
+    overview = api_client.get(f"/api/projects/{snap.repo_id}/overview").json()
+    assert overview["stale"] is True and overview["coverage"]["pulls"]["retained"] is True
+    findings = api_client.get(f"/api/projects/{snap.repo_id}/findings").json()
+    freshness = next(f for f in findings if f["rule_id"] == "freshness")
+    assert datetime.fromisoformat(freshness["observed_at"]) == old
+
+
+async def test_search_period_branch_and_paging_validation(db, api_client):
+    await sync(db)
+    project_id = db.scalar(select(Snapshot.repo_id))
+    prefix = f"/api/projects/{project_id}"
+    assert api_client.get(prefix + "/issues?period=7").json()["items"] == []
+    assert len(api_client.get(prefix + "/issues?period=30").json()["items"]) == 1
+    assert api_client.get(prefix + "/issues?q=%25").json()["items"] == []
+    assert api_client.get(prefix + "/ci?branch=other").json()["items"] == []
+    assert len(api_client.get(prefix + "/ci?branch=main").json()["items"]) == 1
+    assert api_client.get(prefix + "/issues?page=0").status_code == 422
+    assert api_client.get(prefix + "/ci?period=31").status_code == 422
+
+
+async def test_successful_empty_endpoint_removes_old_population_from_current_view(db, api_client):
+    await sync(db)
+    default = transport()
+
+    def handler(request):
+        if request.url.path.endswith("/issues"):
+            return httpx.Response(200, json=[])
+        return default.handle_request(request)
+
+    async with GitHubClient(transport=httpx.MockTransport(handler)) as client:
+        await synchronize(db, "streamlit/streamlit", client)
+    project_id = db.scalar(select(Snapshot.repo_id))
+    data = api_client.get(f"/api/projects/{project_id}/overview").json()
+    assert data["metrics"]["open_issues"] == 0
+    assert data["coverage"]["issues"]["coverage"] == "complete"
+    assert api_client.get(f"/api/projects/{project_id}/issues").json()["items"] == []
+    assert db.scalar(select(func.count()).select_from(Issue)) == 1

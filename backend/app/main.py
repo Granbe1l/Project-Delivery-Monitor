@@ -96,6 +96,18 @@ def snapshot(db, project_id):
     )
 
 
+def oldest_observed_at(snap):
+    """Retained endpoint evidence can be older than the latest mixed snapshot."""
+    return min(
+        [snap.observed_at]
+        + [
+            datetime.fromisoformat(meta["observed_at"])
+            for meta in snap.coverage.values()
+            if meta.get("observed_at")
+        ]
+    )
+
+
 def overview(db, project_id):
     p = project(db, project_id)
     snap = snapshot(db, project_id)
@@ -111,19 +123,10 @@ def overview(db, project_id):
         .order_by(SyncRun.finished_at.desc())
         .limit(1)
     )
-    observed_times = (
-        [snap.observed_at]
-        + [
-            datetime.fromisoformat(meta["observed_at"])
-            for meta in snap.coverage.values()
-            if meta.get("observed_at")
-        ]
-        if snap
-        else []
-    )
-    stale = any(
-        (datetime.now(UTC) - at).total_seconds() > settings().sync_stale_hours * 3600
-        for at in observed_times
+    stale = (
+        snap is not None
+        and (datetime.now(UTC) - oldest_observed_at(snap)).total_seconds()
+        > settings().sync_stale_hours * 3600
     )
     return dict(
         project=p,
@@ -265,11 +268,11 @@ def findings(db, project_id):
                 rule_version="1.0",
                 subject_type="repository",
                 subject_id=str(project_id),
-                observed_at=snap.observed_at,
+                observed_at=oldest_observed_at(snap),
                 evidence_url=info["project"].html_url,
-                observation="Stored observations are older than the configured freshness threshold.",
+                observation="One or more stored source observations are older than the configured freshness threshold.",
                 explanation="The current repository state may differ from this saved observation.",
-                recommendation="Ask the operator to check the scheduled collector and run a new sync.",
+                recommendation="Ask the operator to check the collector and run a new sync.",
                 limitations="Freshness describes this monitor, not repository health.",
                 severity="attention",
             )

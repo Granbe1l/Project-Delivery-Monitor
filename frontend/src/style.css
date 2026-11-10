@@ -210,7 +210,7 @@ button:hover:not(:disabled) {
   align-items: center;
   gap: 13px;
   font-size: 11px;
-  color: #758598;
+  color: #52687d;
 }
 .breadcrumb strong {
   font-weight: 500;
@@ -235,7 +235,7 @@ main {
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 1.9px;
-  color: #647f96;
+  color: #52687d;
 }
 .page-heading h1 {
   font-size: 32px;
@@ -262,7 +262,7 @@ main {
   display: flex;
   gap: 15px;
   align-items: center;
-  color: #6a7d8e;
+  color: #52687d;
   font-size: 11px;
 }
 select,
@@ -283,7 +283,7 @@ input {
   display: flex;
   gap: 10px;
   align-items: center;
-  color: #6b8193;
+  color: #52687d;
   font-size: 10px;
 }
 .last-sync strong {
@@ -310,7 +310,7 @@ input {
   padding: 5px 8px;
   background: #edf1f5;
   border: 1px solid #dbe3eb;
-  color: #5d7185;
+  color: #52687d;
   font-size: 9px;
   border-radius: 4px;
   font-weight: 600;
@@ -361,7 +361,7 @@ input {
   gap: 7px;
   align-items: flex-start;
   font-size: 10px;
-  color: #708395;
+  color: #52687d;
   margin: 16px 0 26px;
   line-height: 1.7;
 }
@@ -449,7 +449,7 @@ input {
 }
 .step > span {
   font-size: 10px;
-  color: #5a7892;
+  color: #52687d;
   font-weight: 600;
   border: 1px solid #c9dae7;
   border-radius: 50%;
@@ -510,7 +510,7 @@ input {
   display: flex;
   justify-content: space-between;
   gap: 20px;
-  color: #7b8c9d;
+  color: #52687d;
   font-size: 9px;
   margin-top: 38px;
 }
@@ -600,7 +600,7 @@ input {
 details {
   margin-top: 16px;
   font-size: 10px;
-  color: #677b8e;
+  color: #52687d;
 }
 summary {
   cursor: pointer;
@@ -628,7 +628,7 @@ table {
 }
 th {
   padding: 15px 12px;
-  color: #73879a;
+  color: #52687d;
   font-weight: 500;
   font-size: 10px;
   background: #f9fbfd;
@@ -662,7 +662,7 @@ td small {
   flex-direction: column;
   gap: 7px;
   font-size: 10px;
-  color: #61798e;
+  color: #52687d;
 }
 .filters label:first-child {
   flex: 1;
@@ -683,7 +683,7 @@ td small {
   padding-top: 18px;
   border-top: 1px solid #e5ecf2;
   font-size: 10px;
-  color: #738599;
+  color: #52687d;
 }
 .pagination > div {
   display: flex;
@@ -1024,5 +1024,15 @@ td small {
 @media (max-width: 700px) {
   .coverage-grid > div {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .sidebar {
+    visibility: hidden;
+    top: 60px;
+  }
+  .sidebar.open {
+    visibility: visible;
   }
 }

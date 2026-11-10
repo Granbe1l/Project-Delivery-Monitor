@@ -1,0 +1,222 @@
+{
+  "checked_at": "2026-11-10T23:04:56.062905+00:00",
+  "passed": true,
+  "source_checks": [
+    {
+      "repo": "streamlit/streamlit",
+      "type": "issue",
+      "github_id": 6303706177,
+      "evidence_url": "https://github.com/streamlit/streamlit/issues/17947",
+      "observed_at": "2026-11-10T22:59:56.225366+00:00",
+      "checked_at": "2026-11-10T23:04:47.379563+00:00",
+      "api_status": 200,
+      "matching_fields": {
+        "id": true,
+        "html_url": true,
+        "title": true
+      },
+      "source_page_http_status": 200
+    },
+    {
+      "repo": "streamlit/streamlit",
+      "type": "pull_request",
+      "github_id": 5249273795,
+      "evidence_url": "https://github.com/streamlit/streamlit/pull/17963",
+      "observed_at": "2026-11-10T22:59:56.225366+00:00",
+      "checked_at": "2026-11-10T23:04:49.032809+00:00",
+      "api_status": 200,
+      "matching_fields": {
+        "id": true,
+        "html_url": true,
+        "title": true
+      }
+    },
+    {
+      "repo": "streamlit/streamlit",
+      "type": "workflow_run",
+      "github_id": 42918964732,
+      "evidence_url": "https://github.com/streamlit/streamlit/actions/runs/42918964732",
+      "observed_at": "2026-11-10T22:59:56.225366+00:00",
+      "checked_at": "2026-11-10T23:04:49.647595+00:00",
+      "api_status": 200,
+      "matching_fields": {
+        "id": true,
+        "html_url": true,
+        "name": true,
+        "status": true,
+        "conclusion": true
+      }
+    },
+    {
+      "repo": "streamlit/streamlit",
+      "type": "milestone",
+      "github_id": 17701325,
+      "evidence_url": "https://github.com/streamlit/streamlit/milestone/12",
+      "observed_at": "2026-11-10T22:59:56.225366+00:00",
+      "checked_at": "2026-11-10T23:04:50.314319+00:00",
+      "api_status": 200,
+      "matching_fields": {
+        "id": true,
+        "html_url": true,
+        "title": true
+      }
+    },
+    {
+      "repo": "apache/airflow",
+      "type": "issue",
+      "github_id": 6317531296,
+      "evidence_url": "https://github.com/apache/airflow/issues/76875",
+      "observed_at": "2026-11-10T23:00:07.110970+00:00",
+      "checked_at": "2026-11-10T23:04:50.655611+00:00",
+      "api_status": 200,
+      "matching_fields": {
+        "id": true,
+        "html_url": true,
+        "title": true
+      },
+      "source_page_http_status": 200
+    },
+    {
+      "repo": "apache/airflow",
+      "type": "pull_request",
+      "github_id": 5249949149,
+      "evidence_url": "https://github.com/apache/airflow/pull/76874",
+      "observed_at": "2026-11-10T23:00:07.110970+00:00",
+      "checked_at": "2026-11-10T23:04:52.015756+00:00",
+      "api_status": 200,
+      "matching_fields": {
+        "id": true,
+        "html_url": true,
+        "title": true
+      }
+    },
+    {
+      "repo": "apache/airflow",
+      "type": "workflow_run",
+      "github_id": 42919491239,
+      "evidence_url": "https://github.com/apache/airflow/actions/runs/42919491239",
+      "observed_at": "2026-11-10T23:00:07.110970+00:00",
+      "checked_at": "2026-11-10T23:04:52.555824+00:00",
+      "api_status": 200,
+      "matching_fields": {
+        "id": true,
+        "html_url": true,
+        "name": true,
+        "status": true,
+        "conclusion": true
+      }
+    },
+    {
+      "repo": "apache/airflow",
+      "type": "milestone",
+      "github_id": 18259699,
+      "evidence_url": "https://github.com/apache/airflow/milestone/154",
+      "observed_at": "2026-11-10T23:00:07.110970+00:00",
+      "checked_at": "2026-11-10T23:04:52.930781+00:00",
+      "api_status": 200,
+      "matching_fields": {
+        "id": true,
+        "html_url": true,
+        "title": true
+      }
+    },
+    {
+      "repo": "vercel/next.js",
+      "type": "issue",
+      "github_id": 6306617599,
+      "evidence_url": "https://github.com/vercel/next.js/issues/101501",
+      "observed_at": "2026-11-10T23:00:18.763378+00:00",
+      "checked_at": "2026-11-10T23:04:53.316531+00:00",
+      "api_status": 200,
+      "matching_fields": {
+        "id": true,
+        "html_url": true,
+        "title": true
+      },
+      "source_page_http_status": 200
+    },
+    {
+      "repo": "vercel/next.js",
+      "type": "pull_request",
+      "github_id": 5249664984,
+      "evidence_url": "https://github.com/vercel/next.js/pull/101533",
+      "observed_at": "2026-11-10T23:00:18.763378+00:00",
+      "checked_at": "2026-11-10T23:04:55.308375+00:00",
+      "api_status": 200,
+      "matching_fields": {
+        "id": true,
+        "html_url": true,
+        "title": true
+      }
+    },
+    {
+      "repo": "vercel/next.js",
+      "type": "workflow_run",
+      "github_id": 42919008550,
+      "evidence_url": "https://github.com/vercel/next.js/actions/runs/42919008550",
+      "observed_at": "2026-11-10T23:00:18.763378+00:00",
+      "checked_at": "2026-11-10T23:04:55.721290+00:00",
+      "api_status": 200,
+      "matching_fields": {
+        "id": true,
+        "html_url": true,
+        "name": true,
+        "status": true,
+        "conclusion": true
+      }
+    },
+    {
+      "repo": "vercel/next.js",
+      "type": "milestone",
+      "github_id": 7569892,
+      "evidence_url": "https://github.com/vercel/next.js/milestone/70",
+      "observed_at": "2026-11-10T23:00:18.763378+00:00",
+      "checked_at": "2026-11-10T23:04:56.052681+00:00",
+      "api_status": 200,
+      "matching_fields": {
+        "id": true,
+        "html_url": true,
+        "title": true
+      }
+    }
+  ],
+  "database_counts": [
+    {
+      "repo": "streamlit/streamlit",
+      "records": {
+        "issues": 124,
+        "pull_requests": 194,
+        "workflow_runs": 403,
+        "milestones": 9
+      },
+      "snapshots": 3
+    },
+    {
+      "repo": "apache/airflow",
+      "records": {
+        "issues": 31,
+        "pull_requests": 226,
+        "workflow_runs": 400,
+        "milestones": 144
+      },
+      "snapshots": 2
+    },
+    {
+      "repo": "vercel/next.js",
+      "records": {
+        "issues": 16,
+        "pull_requests": 214,
+        "workflow_runs": 400,
+        "milestones": 59
+      },
+      "snapshots": 2
+    }
+  ],
+  "duplicate_key_groups": {
+    "issues": 0,
+    "pull_requests": 0,
+    "workflow_runs": 0,
+    "milestones": 0
+  },
+  "limitation": "Only sampled records were compared. GitHub may change after collection; a differing mutable field requires inspecting source update time, not silently overwriting the saved observation."
+}

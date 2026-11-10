@@ -1,0 +1,50 @@
+{
+  "label": "SYNTHETIC TEST STATE ONLY",
+  "projects": [
+    {
+      "id": 1,
+      "full_name": "streamlit/streamlit",
+      "default_branch": null,
+      "html_url": null,
+      "enabled": true
+    },
+    {
+      "id": 2,
+      "full_name": "apache/airflow",
+      "default_branch": null,
+      "html_url": null,
+      "enabled": true
+    },
+    {
+      "id": 3,
+      "full_name": "vercel/next.js",
+      "default_branch": null,
+      "html_url": null,
+      "enabled": true
+    }
+  ],
+  "overview": {
+    "project": {
+      "id": 1,
+      "full_name": "streamlit/streamlit",
+      "default_branch": null,
+      "html_url": null,
+      "enabled": true
+    },
+    "observed_at": null,
+    "last_successful_sync_at": null,
+    "last_attempt_at": null,
+    "last_attempt_status": null,
+    "stale": false,
+    "status": "unavailable",
+    "coverage": {},
+    "metrics": null,
+    "policy": {
+      "pr_age_days": 14,
+      "pr_idle_days": 14,
+      "ci_failure_threshold": 3,
+      "stale_hours": 24
+    },
+    "scope": "TEST DATA: synthetic records for browser testing only."
+  }
+}
