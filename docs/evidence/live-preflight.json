@@ -1,0 +1,167 @@
+[
+  {
+    "repository": "streamlit/streamlit",
+    "endpoint": "repository",
+    "checked_at": "2026-11-10T18:39:28.221180+00:00",
+    "status": 200,
+    "schema": "valid",
+    "returned_items": 1,
+    "rate_remaining": "14962",
+    "rate_reset": "1794337016",
+    "coverage": "complete"
+  },
+  {
+    "repository": "streamlit/streamlit",
+    "endpoint": "issues",
+    "checked_at": "2026-11-10T18:39:29.010621+00:00",
+    "status": 200,
+    "schema": "valid",
+    "returned_items": 100,
+    "rate_remaining": "14961",
+    "rate_reset": "1794337016",
+    "coverage": "partial"
+  },
+  {
+    "repository": "streamlit/streamlit",
+    "endpoint": "pulls",
+    "checked_at": "2026-11-10T18:39:30.040136+00:00",
+    "status": 200,
+    "schema": "valid",
+    "returned_items": 100,
+    "rate_remaining": "14960",
+    "rate_reset": "1794337016",
+    "coverage": "partial"
+  },
+  {
+    "repository": "streamlit/streamlit",
+    "endpoint": "workflows",
+    "checked_at": "2026-11-10T18:39:31.105194+00:00",
+    "status": 200,
+    "schema": "valid",
+    "returned_items": 100,
+    "rate_remaining": "14959",
+    "rate_reset": "1794337016",
+    "coverage": "partial"
+  },
+  {
+    "repository": "streamlit/streamlit",
+    "endpoint": "milestones",
+    "checked_at": "2026-11-10T18:39:34.163900+00:00",
+    "status": 200,
+    "schema": "valid",
+    "returned_items": 9,
+    "rate_remaining": "14958",
+    "rate_reset": "1794337016",
+    "coverage": "complete"
+  },
+  {
+    "repository": "apache/airflow",
+    "endpoint": "repository",
+    "checked_at": "2026-11-10T18:39:34.535334+00:00",
+    "status": 200,
+    "schema": "valid",
+    "returned_items": 1,
+    "rate_remaining": "14957",
+    "rate_reset": "1794337016",
+    "coverage": "complete"
+  },
+  {
+    "repository": "apache/airflow",
+    "endpoint": "issues",
+    "checked_at": "2026-11-10T18:39:35.010098+00:00",
+    "status": 200,
+    "schema": "valid",
+    "returned_items": 100,
+    "rate_remaining": "14956",
+    "rate_reset": "1794337016",
+    "coverage": "partial"
+  },
+  {
+    "repository": "apache/airflow",
+    "endpoint": "pulls",
+    "checked_at": "2026-11-10T18:39:36.235671+00:00",
+    "status": 200,
+    "schema": "valid",
+    "returned_items": 100,
+    "rate_remaining": "14955",
+    "rate_reset": "1794337016",
+    "coverage": "partial"
+  },
+  {
+    "repository": "apache/airflow",
+    "endpoint": "workflows",
+    "checked_at": "2026-11-10T18:39:37.635694+00:00",
+    "status": 200,
+    "schema": "valid",
+    "returned_items": 100,
+    "rate_remaining": "14954",
+    "rate_reset": "1794337016",
+    "coverage": "partial"
+  },
+  {
+    "repository": "apache/airflow",
+    "endpoint": "milestones",
+    "checked_at": "2026-11-10T18:39:40.148559+00:00",
+    "status": 200,
+    "schema": "valid",
+    "returned_items": 100,
+    "rate_remaining": "14953",
+    "rate_reset": "1794337016",
+    "coverage": "partial"
+  },
+  {
+    "repository": "vercel/next.js",
+    "endpoint": "repository",
+    "checked_at": "2026-11-10T18:39:40.588325+00:00",
+    "status": 200,
+    "schema": "valid",
+    "returned_items": 1,
+    "rate_remaining": "14952",
+    "rate_reset": "1794337016",
+    "coverage": "complete"
+  },
+  {
+    "repository": "vercel/next.js",
+    "endpoint": "issues",
+    "checked_at": "2026-11-10T18:39:41.182030+00:00",
+    "status": 200,
+    "schema": "valid",
+    "returned_items": 100,
+    "rate_remaining": "14951",
+    "rate_reset": "1794337016",
+    "coverage": "partial"
+  },
+  {
+    "repository": "vercel/next.js",
+    "endpoint": "pulls",
+    "checked_at": "2026-11-10T18:39:42.156952+00:00",
+    "status": 200,
+    "schema": "valid",
+    "returned_items": 100,
+    "rate_remaining": "14950",
+    "rate_reset": "1794337016",
+    "coverage": "partial"
+  },
+  {
+    "repository": "vercel/next.js",
+    "endpoint": "workflows",
+    "checked_at": "2026-11-10T18:39:43.459909+00:00",
+    "status": 200,
+    "schema": "valid",
+    "returned_items": 100,
+    "rate_remaining": "14949",
+    "rate_reset": "1794337016",
+    "coverage": "partial"
+  },
+  {
+    "repository": "vercel/next.js",
+    "endpoint": "milestones",
+    "checked_at": "2026-11-10T18:39:46.197678+00:00",
+    "status": 200,
+    "schema": "valid",
+    "returned_items": 59,
+    "rate_remaining": "14948",
+    "rate_reset": "1794337016",
+    "coverage": "complete"
+  }
+]

@@ -2,9 +2,9 @@
 
 A read-only software delivery dashboard for public GitHub repositories. Review observed issues, pull requests, workflow runs, and milestones; understand why an item needs attention; open the original evidence.
 
-**Status:** implemented and tested locally with PostgreSQL. Live GitHub collection has **not** been verified: this cloud environment's egress proxy denies `api.github.com`. The application truthfully shows unavailable data. No deployment or periodic scheduler has been activated. This is not yet a live-data portfolio demonstration.
+**Status:** live GitHub access and manual collection are verified for Streamlit, Airflow and Next.js in the published cloud environment. The React dashboard displays actual PostgreSQL observations. Large sources remain explicitly partial because of the two-page collection budget. No public deployment or periodic scheduler has been activated. See [live validation](docs/LIVE_VALIDATION.md) and [preview instructions](docs/PREVIEW.md).
 
-![Actual local dashboard showing unavailable GitHub data](docs/screenshots/overview-desktop.png)
+![Actual dashboard with verified GitHub observations](docs/screenshots/overview-live-desktop.png)
 
 ## What works
 
@@ -64,12 +64,14 @@ cd ../frontend
 npm run lint
 npm test
 npm run build
-# With scripts/start.sh running and the app database still unseeded:
+# With the app running AFTER real sync (Streamlit needs at least two observations):
+PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/chromium npm run test:e2e:live
+# On a separate unseeded app database, the original empty-state regression suite:
 PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/chromium npm run test:e2e
 # Or install Playwright Chromium on your machine: npx playwright install chromium
 ```
 
-Backend tests use synthetic **TEST DATA** from `backend/tests/fixtures` in a separate `pdm_test` database; browser mocks use `frontend/tests/fixtures`. No test records are inserted into the app database. The browser suite checks the real, unseeded application plus a simulated API outage, then a clearly isolated TEST DATA flow for search, pagination and report export. Its real-API smoke deliberately expects unavailable GitHub data.
+Backend tests use synthetic **TEST DATA** from `backend/tests/fixtures` in a separate `pdm_test` database; browser mocks use `frontend/tests/fixtures`. No test records are inserted into the app database. The browser suite checks the real, unseeded application plus a simulated API outage, then a clearly isolated TEST DATA flow for search, pagination and report export. Its original real-API smoke deliberately expects unavailable GitHub data. The separate `test:e2e:live` suite uses the actual API without mocks, checks dashboard values against stored observations for all three projects, exercises real records and report export, and captures live screenshots. Do not clear collected data to run the empty-state suite.
 
 ## Architecture
 
@@ -92,4 +94,4 @@ Public activity cannot establish overall code quality, client deadlines, cost ov
 
 Documentation: [architecture](docs/ARCHITECTURE.md), [metrics and sources](docs/DATA_SOURCES_AND_METRICS.md), [rules](docs/RISK_RULES.md), [test evidence](docs/TEST_EVIDENCE.md), [limitations](docs/LIMITATIONS.md), [deployment](docs/DEPLOYMENT.md), [interview guide](docs/INTERVIEW_GUIDE.md).
 
-**Catatan Indonesia:** aplikasi lokal sudah tersedia. Verifikasi data GitHub nyata, deployment publik, dan penjadwalan periodik masih menunggu akses jaringan serta konfigurasi provider. Angka fixture tidak ditampilkan sebagai data nyata.
+**Catatan Indonesia:** aplikasi sudah menampilkan data GitHub nyata dari ketiga repository. Cakupan parsial tetap ditandai. Deployment publik dan penjadwalan periodik belum diaktifkan. Lihat panduan preview untuk melihat tampilan aktual; fixture pengujian tidak masuk ke database aplikasi.

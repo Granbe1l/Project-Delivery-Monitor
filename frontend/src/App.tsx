@@ -220,7 +220,7 @@ export default function App() {
         </div>
         <div className="sidebar-footer">
           <span className="dot" />
-          GitHub REST API · Periodic sync
+          GitHub REST API · Stored observations
         </div>
       </aside>
       <div className="main-shell">

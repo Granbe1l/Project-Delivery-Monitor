@@ -6,7 +6,7 @@ Templates are prepared, not deployed. Review current provider capabilities, term
 
 Use the existing checkout in each isolated cloud task. Do not create a Git worktree unless explicitly requested. Run `scripts/install.sh`, then `scripts/start.sh`; the latter is a foreground supervisor. Installed files and the PostgreSQL volume can persist in a snapshot, but processes must restart. Readiness checks: GET `/health/ready`, GET `/api/projects` (three configured identities), then open the dashboard. A healthy database with no GitHub data correctly yields unavailable metrics.
 
-This environment needs outbound `api.github.com` and `docs.github.com` in environment settings. Git clone access does not prove GitHub REST API access. The existing package-manager policy already supports npm/PyPI/Docker dependencies. No new token is required merely because anonymous calls are blocked by policy. After adding domains and saving settings, run the CLI preflight and actual sync again, then compare source URLs and timestamps before claiming live-data readiness.
+The current published environment allows `api.github.com` and `docs.github.com`; both were verified with fresh HTTP 200 requests. Preserve those domain permissions for future environments. Git clone access does not prove GitHub REST API access. The existing package-manager policy already supports npm/PyPI/Docker dependencies. No new token is required merely because anonymous calls are blocked by policy. After any future network changes, rerun the CLI preflight and compare source evidence. The current live checks are recorded in LIVE_VALIDATION.md. See PREVIEW.md for viewing the running local UI.
 
 Docker builds under a TLS-inspecting proxy must retain verification:
 

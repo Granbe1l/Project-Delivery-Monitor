@@ -9,8 +9,9 @@
     "typecheck": "tsc -b",
     "lint": "eslint .",
     "test": "vitest run",
-    "test:e2e": "playwright test",
-    "format:check": "prettier --check src"
+    "test:e2e": "playwright test smoke.spec.ts",
+    "format:check": "prettier --check src",
+    "test:e2e:live": "playwright test live.spec.ts"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.0",

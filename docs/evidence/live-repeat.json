@@ -1,0 +1,53 @@
+[
+  {
+    "repository": "streamlit/streamlit",
+    "status": "partial",
+    "rows": 524,
+    "endpoints": {
+      "repository": {
+        "http_status": 200,
+        "coverage": "complete"
+      },
+      "issues": {
+        "pages": 2,
+        "coverage": "partial",
+        "http_status": 200,
+        "error": null,
+        "rate_remaining": "14920",
+        "rate_reset": "1794337016",
+        "retry_after": null,
+        "observed_at": "2026-11-10T18:40:56.706117+00:00"
+      },
+      "pulls": {
+        "pages": 2,
+        "coverage": "complete",
+        "http_status": 200,
+        "error": null,
+        "rate_remaining": "14918",
+        "rate_reset": "1794337016",
+        "retry_after": null,
+        "observed_at": "2026-11-10T18:40:56.706117+00:00"
+      },
+      "workflows": {
+        "pages": 2,
+        "coverage": "partial",
+        "http_status": 200,
+        "error": null,
+        "rate_remaining": "14916",
+        "rate_reset": "1794337016",
+        "retry_after": null,
+        "observed_at": "2026-11-10T18:40:56.706117+00:00"
+      },
+      "milestones": {
+        "pages": 1,
+        "coverage": "complete",
+        "http_status": 200,
+        "error": null,
+        "rate_remaining": "14915",
+        "rate_reset": "1794337016",
+        "retry_after": null,
+        "observed_at": "2026-11-10T18:40:56.706117+00:00"
+      }
+    }
+  }
+]

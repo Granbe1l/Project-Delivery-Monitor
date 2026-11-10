@@ -37,4 +37,4 @@ No reviews endpoint is fetched yet; requested reviewer names are metadata, not a
 - https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api
 - https://docs.github.com/en/rest/using-the-rest-api/using-pagination-in-the-rest-api
 
-This environment blocked the documentation host as well as the API during implementation. Current remote behavior and individual source records still require verification after access is restored. The client sends GitHub API version `2022-11-28`, the GitHub JSON Accept header, and an identifying User-Agent.
+The initial environment blocked the documentation and API hosts. After the user published domain additions, all seven official documentation pages above returned HTTP 200; actual pagination, source schemas and sampled records were verified. See LIVE_VALIDATION.md for timestamped scope and evidence. The client sends GitHub API version `2022-11-28`, the GitHub JSON Accept header, and an identifying User-Agent.
