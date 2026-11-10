@@ -1,0 +1,394 @@
+{
+  "label": "SYNTHETIC TEST DATA ONLY",
+  "project": {
+    "id": 1,
+    "full_name": "streamlit/streamlit",
+    "default_branch": "main",
+    "html_url": "https://github.com/streamlit/streamlit",
+    "enabled": true
+  },
+  "overview": {
+    "project": {
+      "id": 1,
+      "full_name": "streamlit/streamlit",
+      "default_branch": "main",
+      "html_url": "https://github.com/streamlit/streamlit",
+      "enabled": true
+    },
+    "observed_at": "2026-11-10T00:00:00Z",
+    "last_successful_sync_at": "2026-11-10T00:00:00Z",
+    "last_attempt_at": "2026-11-10T00:00:00Z",
+    "last_attempt_status": "success",
+    "stale": false,
+    "status": "available",
+    "coverage": {
+      "issues": {
+        "coverage": "complete",
+        "observed_at": "2026-11-10T00:00:00Z"
+      },
+      "pulls": {
+        "coverage": "complete",
+        "observed_at": "2026-11-10T00:00:00Z"
+      },
+      "workflows": {
+        "coverage": "complete",
+        "observed_at": "2026-11-10T00:00:00Z"
+      },
+      "milestones": {
+        "coverage": "complete",
+        "observed_at": "2026-11-10T00:00:00Z"
+      }
+    },
+    "metrics": {
+      "open_issues": 0,
+      "open_prs": 26,
+      "prs_needing_attention": 26,
+      "labeled_bug_reports": 0,
+      "ci_completed": 0,
+      "ci_failures": 0,
+      "ci_conclusions": {},
+      "issue_age_bins": {
+        "0\u20136 days": 0,
+        "7\u201313 days": 0,
+        "14\u201329 days": 0,
+        "30+ days": 0
+      }
+    },
+    "policy": {
+      "pr_age_days": 14,
+      "pr_idle_days": 14,
+      "ci_failure_threshold": 3,
+      "stale_hours": 24
+    },
+    "scope": "TEST DATA: synthetic records for browser testing only."
+  },
+  "findings": [
+    {
+      "rule_id": "pr_age",
+      "rule_version": "1.0",
+      "subject_type": "pull_request",
+      "subject_id": "1",
+      "observed_at": "2026-11-10T00:00:00Z",
+      "evidence_url": "https://github.com/streamlit/streamlit/pull/1",
+      "observation": "TEST DATA: pull request older than threshold.",
+      "explanation": "TEST DATA: configurable demonstration threshold.",
+      "recommendation": "TEST DATA: open the original record.",
+      "limitations": "TEST DATA: no real repository assessment.",
+      "severity": "attention"
+    }
+  ],
+  "pulls": [
+    {
+      "github_id": 1,
+      "number": 1,
+      "title": "TEST DATA: change 01",
+      "html_url": "https://github.com/streamlit/streamlit/pull/1",
+      "last_seen_at": "2026-11-10T00:00:00Z",
+      "created_at": "2026-10-01T00:00:00Z",
+      "updated_at": "2026-11-01T00:00:00Z",
+      "state": "open",
+      "draft": false,
+      "requested_reviewers": []
+    },
+    {
+      "github_id": 2,
+      "number": 2,
+      "title": "TEST DATA: change 02",
+      "html_url": "https://github.com/streamlit/streamlit/pull/2",
+      "last_seen_at": "2026-11-10T00:00:00Z",
+      "created_at": "2026-10-01T00:00:00Z",
+      "updated_at": "2026-11-01T00:00:00Z",
+      "state": "open",
+      "draft": false,
+      "requested_reviewers": []
+    },
+    {
+      "github_id": 3,
+      "number": 3,
+      "title": "TEST DATA: change 03",
+      "html_url": "https://github.com/streamlit/streamlit/pull/3",
+      "last_seen_at": "2026-11-10T00:00:00Z",
+      "created_at": "2026-10-01T00:00:00Z",
+      "updated_at": "2026-11-01T00:00:00Z",
+      "state": "open",
+      "draft": false,
+      "requested_reviewers": []
+    },
+    {
+      "github_id": 4,
+      "number": 4,
+      "title": "TEST DATA: change 04",
+      "html_url": "https://github.com/streamlit/streamlit/pull/4",
+      "last_seen_at": "2026-11-10T00:00:00Z",
+      "created_at": "2026-10-01T00:00:00Z",
+      "updated_at": "2026-11-01T00:00:00Z",
+      "state": "open",
+      "draft": false,
+      "requested_reviewers": []
+    },
+    {
+      "github_id": 5,
+      "number": 5,
+      "title": "TEST DATA: change 05",
+      "html_url": "https://github.com/streamlit/streamlit/pull/5",
+      "last_seen_at": "2026-11-10T00:00:00Z",
+      "created_at": "2026-10-01T00:00:00Z",
+      "updated_at": "2026-11-01T00:00:00Z",
+      "state": "open",
+      "draft": false,
+      "requested_reviewers": []
+    },
+    {
+      "github_id": 6,
+      "number": 6,
+      "title": "TEST DATA: change 06",
+      "html_url": "https://github.com/streamlit/streamlit/pull/6",
+      "last_seen_at": "2026-11-10T00:00:00Z",
+      "created_at": "2026-10-01T00:00:00Z",
+      "updated_at": "2026-11-01T00:00:00Z",
+      "state": "open",
+      "draft": false,
+      "requested_reviewers": []
+    },
+    {
+      "github_id": 7,
+      "number": 7,
+      "title": "TEST DATA: change 07",
+      "html_url": "https://github.com/streamlit/streamlit/pull/7",
+      "last_seen_at": "2026-11-10T00:00:00Z",
+      "created_at": "2026-10-01T00:00:00Z",
+      "updated_at": "2026-11-01T00:00:00Z",
+      "state": "open",
+      "draft": false,
+      "requested_reviewers": []
+    },
+    {
+      "github_id": 8,
+      "number": 8,
+      "title": "TEST DATA: change 08",
+      "html_url": "https://github.com/streamlit/streamlit/pull/8",
+      "last_seen_at": "2026-11-10T00:00:00Z",
+      "created_at": "2026-10-01T00:00:00Z",
+      "updated_at": "2026-11-01T00:00:00Z",
+      "state": "open",
+      "draft": false,
+      "requested_reviewers": []
+    },
+    {
+      "github_id": 9,
+      "number": 9,
+      "title": "TEST DATA: change 09",
+      "html_url": "https://github.com/streamlit/streamlit/pull/9",
+      "last_seen_at": "2026-11-10T00:00:00Z",
+      "created_at": "2026-10-01T00:00:00Z",
+      "updated_at": "2026-11-01T00:00:00Z",
+      "state": "open",
+      "draft": false,
+      "requested_reviewers": []
+    },
+    {
+      "github_id": 10,
+      "number": 10,
+      "title": "TEST DATA: change 10",
+      "html_url": "https://github.com/streamlit/streamlit/pull/10",
+      "last_seen_at": "2026-11-10T00:00:00Z",
+      "created_at": "2026-10-01T00:00:00Z",
+      "updated_at": "2026-11-01T00:00:00Z",
+      "state": "open",
+      "draft": false,
+      "requested_reviewers": []
+    },
+    {
+      "github_id": 11,
+      "number": 11,
+      "title": "TEST DATA: change 11",
+      "html_url": "https://github.com/streamlit/streamlit/pull/11",
+      "last_seen_at": "2026-11-10T00:00:00Z",
+      "created_at": "2026-10-01T00:00:00Z",
+      "updated_at": "2026-11-01T00:00:00Z",
+      "state": "open",
+      "draft": false,
+      "requested_reviewers": []
+    },
+    {
+      "github_id": 12,
+      "number": 12,
+      "title": "TEST DATA: change 12",
+      "html_url": "https://github.com/streamlit/streamlit/pull/12",
+      "last_seen_at": "2026-11-10T00:00:00Z",
+      "created_at": "2026-10-01T00:00:00Z",
+      "updated_at": "2026-11-01T00:00:00Z",
+      "state": "open",
+      "draft": false,
+      "requested_reviewers": []
+    },
+    {
+      "github_id": 13,
+      "number": 13,
+      "title": "TEST DATA: change 13",
+      "html_url": "https://github.com/streamlit/streamlit/pull/13",
+      "last_seen_at": "2026-11-10T00:00:00Z",
+      "created_at": "2026-10-01T00:00:00Z",
+      "updated_at": "2026-11-01T00:00:00Z",
+      "state": "open",
+      "draft": false,
+      "requested_reviewers": []
+    },
+    {
+      "github_id": 14,
+      "number": 14,
+      "title": "TEST DATA: change 14",
+      "html_url": "https://github.com/streamlit/streamlit/pull/14",
+      "last_seen_at": "2026-11-10T00:00:00Z",
+      "created_at": "2026-10-01T00:00:00Z",
+      "updated_at": "2026-11-01T00:00:00Z",
+      "state": "open",
+      "draft": false,
+      "requested_reviewers": []
+    },
+    {
+      "github_id": 15,
+      "number": 15,
+      "title": "TEST DATA: change 15",
+      "html_url": "https://github.com/streamlit/streamlit/pull/15",
+      "last_seen_at": "2026-11-10T00:00:00Z",
+      "created_at": "2026-10-01T00:00:00Z",
+      "updated_at": "2026-11-01T00:00:00Z",
+      "state": "open",
+      "draft": false,
+      "requested_reviewers": []
+    },
+    {
+      "github_id": 16,
+      "number": 16,
+      "title": "TEST DATA: change 16",
+      "html_url": "https://github.com/streamlit/streamlit/pull/16",
+      "last_seen_at": "2026-11-10T00:00:00Z",
+      "created_at": "2026-10-01T00:00:00Z",
+      "updated_at": "2026-11-01T00:00:00Z",
+      "state": "open",
+      "draft": false,
+      "requested_reviewers": []
+    },
+    {
+      "github_id": 17,
+      "number": 17,
+      "title": "TEST DATA: change 17",
+      "html_url": "https://github.com/streamlit/streamlit/pull/17",
+      "last_seen_at": "2026-11-10T00:00:00Z",
+      "created_at": "2026-10-01T00:00:00Z",
+      "updated_at": "2026-11-01T00:00:00Z",
+      "state": "open",
+      "draft": false,
+      "requested_reviewers": []
+    },
+    {
+      "github_id": 18,
+      "number": 18,
+      "title": "TEST DATA: change 18",
+      "html_url": "https://github.com/streamlit/streamlit/pull/18",
+      "last_seen_at": "2026-11-10T00:00:00Z",
+      "created_at": "2026-10-01T00:00:00Z",
+      "updated_at": "2026-11-01T00:00:00Z",
+      "state": "open",
+      "draft": false,
+      "requested_reviewers": []
+    },
+    {
+      "github_id": 19,
+      "number": 19,
+      "title": "TEST DATA: change 19",
+      "html_url": "https://github.com/streamlit/streamlit/pull/19",
+      "last_seen_at": "2026-11-10T00:00:00Z",
+      "created_at": "2026-10-01T00:00:00Z",
+      "updated_at": "2026-11-01T00:00:00Z",
+      "state": "open",
+      "draft": false,
+      "requested_reviewers": []
+    },
+    {
+      "github_id": 20,
+      "number": 20,
+      "title": "TEST DATA: change 20",
+      "html_url": "https://github.com/streamlit/streamlit/pull/20",
+      "last_seen_at": "2026-11-10T00:00:00Z",
+      "created_at": "2026-10-01T00:00:00Z",
+      "updated_at": "2026-11-01T00:00:00Z",
+      "state": "open",
+      "draft": false,
+      "requested_reviewers": []
+    },
+    {
+      "github_id": 21,
+      "number": 21,
+      "title": "TEST DATA: change 21",
+      "html_url": "https://github.com/streamlit/streamlit/pull/21",
+      "last_seen_at": "2026-11-10T00:00:00Z",
+      "created_at": "2026-10-01T00:00:00Z",
+      "updated_at": "2026-11-01T00:00:00Z",
+      "state": "open",
+      "draft": false,
+      "requested_reviewers": []
+    },
+    {
+      "github_id": 22,
+      "number": 22,
+      "title": "TEST DATA: change 22",
+      "html_url": "https://github.com/streamlit/streamlit/pull/22",
+      "last_seen_at": "2026-11-10T00:00:00Z",
+      "created_at": "2026-10-01T00:00:00Z",
+      "updated_at": "2026-11-01T00:00:00Z",
+      "state": "open",
+      "draft": false,
+      "requested_reviewers": []
+    },
+    {
+      "github_id": 23,
+      "number": 23,
+      "title": "TEST DATA: change 23",
+      "html_url": "https://github.com/streamlit/streamlit/pull/23",
+      "last_seen_at": "2026-11-10T00:00:00Z",
+      "created_at": "2026-10-01T00:00:00Z",
+      "updated_at": "2026-11-01T00:00:00Z",
+      "state": "open",
+      "draft": false,
+      "requested_reviewers": []
+    },
+    {
+      "github_id": 24,
+      "number": 24,
+      "title": "TEST DATA: change 24",
+      "html_url": "https://github.com/streamlit/streamlit/pull/24",
+      "last_seen_at": "2026-11-10T00:00:00Z",
+      "created_at": "2026-10-01T00:00:00Z",
+      "updated_at": "2026-11-01T00:00:00Z",
+      "state": "open",
+      "draft": false,
+      "requested_reviewers": []
+    },
+    {
+      "github_id": 25,
+      "number": 25,
+      "title": "TEST DATA: change 25",
+      "html_url": "https://github.com/streamlit/streamlit/pull/25",
+      "last_seen_at": "2026-11-10T00:00:00Z",
+      "created_at": "2026-10-01T00:00:00Z",
+      "updated_at": "2026-11-01T00:00:00Z",
+      "state": "open",
+      "draft": false,
+      "requested_reviewers": []
+    },
+    {
+      "github_id": 26,
+      "number": 26,
+      "title": "TEST DATA: change 26",
+      "html_url": "https://github.com/streamlit/streamlit/pull/26",
+      "last_seen_at": "2026-11-10T00:00:00Z",
+      "created_at": "2026-10-01T00:00:00Z",
+      "updated_at": "2026-11-01T00:00:00Z",
+      "state": "open",
+      "draft": false,
+      "requested_reviewers": []
+    }
+  ]
+}
