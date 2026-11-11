@@ -128,9 +128,7 @@ export function Metric({
         </span>
       </div>
       <strong>{value ?? "—"}</strong>
-      <small>
-        {value == null ? "Data unavailable" : "In collected records"}
-      </small>
+      <small>{value == null ? "Data unavailable" : "Items analyzed"}</small>
     </article>
   );
 }
@@ -643,11 +641,16 @@ function CoveragePanel({ info }: { info: Overview }) {
     <section className="panel coverage-panel">
       <div>
         <h2>Data Quality</h2>
-        <p>
-          Collection status for each source. Partial means collection stopped
-          before all records were fetched. Counts are a sample, never a
-          repository total.
-        </p>
+        <p>Partial coverage means some items may be missing.</p>
+        <details>
+          <summary>Scope & methodology</summary>
+          <p>
+            Each source has its own timestamp. Partial counts describe items
+            analyzed, not the full repository. Retained data was not refreshed
+            successfully. Activity alone does not establish delivery
+            performance.
+          </p>
+        </details>
       </div>
       <div className="coverage-grid">
         {[
@@ -729,6 +732,48 @@ function Details({ info }: { info: Overview }) {
         {info.project.html_url && (
           <Evidence url={info.project.html_url}>Open repository</Evidence>
         )}
+      </div>
+      <div className="metrics detail-summary">
+        <Metric
+          label="Sources available"
+          value={
+            Object.keys(info.coverage).length
+              ? Object.entries(info.coverage).filter(
+                  ([key, c]) =>
+                    key !== "repository" && c.coverage !== "unavailable",
+                ).length
+              : null
+          }
+          help="Issue, pull request, workflow and milestone sources with stored observations."
+        />
+        <Metric
+          label="Saved observations"
+          value={trends.data?.points.length}
+          help="Snapshots available in the history response; not necessarily comparable."
+        />
+        <Metric
+          label="Milestones analyzed"
+          value={
+            milestoneSource.data?.coverage === "unavailable"
+              ? null
+              : milestoneSource.data?.total_in_observation
+          }
+          help="All milestones in the stored observation, before your filters."
+        />
+      </div>
+      <div className="page-insight">
+        <strong>
+          {info.observed_at
+            ? "Source coverage determines which comparisons are meaningful."
+            : "No source observation is available yet."}
+        </strong>
+        <details>
+          <summary>How to review this project</summary>
+          <p>
+            Check source coverage before comparing snapshots; different samples
+            can change counts without a real change in activity.
+          </p>
+        </details>
       </div>
       <div className="panel details-grid">
         <div>
@@ -944,6 +989,24 @@ function Details({ info }: { info: Overview }) {
     </>
   );
 }
+function PageInsight({ info, source }: { info: Overview; source: string }) {
+  const finding = keyFindings(info).find((f) => f.source === source);
+  return (
+    <div className="page-insight">
+      <strong>
+        {finding?.title ?? "Insufficient data for a quantitative summary."}
+      </strong>
+      {finding && (
+        <details>
+          <summary>Meaning & suggested review</summary>
+          <p>{finding.meaning}</p>
+          <p>{finding.action}</p>
+          <small>{finding.sample}</small>
+        </details>
+      )}
+    </div>
+  );
+}
 function Records({
   info,
   kind,
@@ -1015,6 +1078,7 @@ function Records({
           />
         </div>
       )}
+      <PageInsight info={info} source={kind} />
       {kind === "issues" && info.metrics?.issue_age_bins && (
         <div className="age-bins">
           {Object.entries(info.metrics.issue_age_bins).map(([bin, count]) => (
@@ -1039,9 +1103,9 @@ function Records({
               help="Failures among those completed checks; not production incidents."
             />
             <Metric
-              label="Successful checks"
-              value={info.metrics.ci_conclusions.success ?? 0}
-              help="Only the success conclusion in the same collected window."
+              label="Skipped checks"
+              value={info.metrics.ci_conclusions.skipped ?? 0}
+              help="Checks with the skipped conclusion in this same window; not successes or failures."
             />
             <Metric
               label="Success share"
@@ -1164,7 +1228,16 @@ function Records({
                       {rows.data.items.map((r) => (
                         <tr key={r.github_id}>
                           <td data-label="Title / source">
-                            <strong>{r.title ?? r.name}</strong>
+                            {(r.title ?? r.name ?? "").length > 90 ? (
+                              <details className="record-title">
+                                <summary>
+                                  {(r.title ?? r.name ?? "").slice(0, 87)}…
+                                </summary>
+                                <strong>{r.title ?? r.name}</strong>
+                              </details>
+                            ) : (
+                              <strong>{r.title ?? r.name}</strong>
+                            )}
                             <small>
                               {r.number ? `#${r.number}` : `Run ${r.github_id}`}
                             </small>
@@ -1334,6 +1407,21 @@ function Risks({ info }: { info: Overview }) {
           )}
         </div>
       )}
+      <div className="page-insight">
+        <strong>
+          {brief.data
+            ? `${brief.data.findings.length} rule-based findings are available for review; they are not confirmed business risks.`
+            : "Findings require a verified observation."}
+        </strong>
+        <details>
+          <summary>How to prioritize review</summary>
+          <p>
+            Filter by the existing rule type, inspect the source, and confirm
+            ownership or the next action. Attention is a review signal; no new
+            High/Medium/Low scale is inferred.
+          </p>
+        </details>
+      </div>
       <div className="brief-intro">
         <div>
           <span className="eyebrow">PROJECT INTELLIGENCE BRIEF</span>

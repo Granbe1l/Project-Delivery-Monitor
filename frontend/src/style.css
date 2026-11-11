@@ -1937,3 +1937,37 @@ td:first-child {
     grid-template-columns: 1fr;
   }
 }
+.page-insight {
+  margin: 16px 0 20px;
+  padding: 14px 16px;
+  background: #edf5fb;
+  border-left: 3px solid #78b4dc;
+  border-radius: 4px;
+  font-size: 13px;
+}
+.page-insight details {
+  margin-top: 8px;
+}
+.page-insight p {
+  font-size: 12px;
+}
+.detail-summary {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 16px;
+}
+.record-title {
+  margin: 0;
+  color: #21354a;
+  font-size: 12px;
+}
+.record-title strong {
+  margin-top: 8px;
+}
+.coverage-panel details {
+  margin-top: 8px;
+}
+@media (max-width: 700px) {
+  .detail-summary {
+    grid-template-columns: 1fr 1fr;
+  }
+}

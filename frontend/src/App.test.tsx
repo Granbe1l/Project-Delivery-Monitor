@@ -12,7 +12,7 @@ describe("Honest evidence presentation", () => {
     expect(screen.queryByText("0")).not.toBeInTheDocument();
     rerender(<Metric label="Open issues" value={0} help="Collected scope" />);
     expect(screen.getByText("0")).toBeInTheDocument();
-    expect(screen.getByText("In collected records")).toBeInTheDocument();
+    expect(screen.getByText("Items analyzed")).toBeInTheDocument();
   });
   it("rejects unsafe evidence links", () => {
     render(<Evidence url="https://github.com.evil.test/a" />);

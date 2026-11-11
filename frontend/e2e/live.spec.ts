@@ -38,6 +38,12 @@ test("live GitHub observations match the rendered dashboard for all projects", a
     ).json();
     expect(issues.items.length).toBeGreaterThan(0);
     await page.locator('nav a[href^="/issues"]').click();
+    await expect(page.locator("tbody tr").first()).toBeVisible();
+    const titleDetails = page
+      .locator("tbody tr")
+      .first()
+      .locator(".record-title summary");
+    if (await titleDetails.count()) await titleDetails.click();
     await expect(
       page.getByText(issues.items[0].title!, { exact: true }),
     ).toBeVisible();
