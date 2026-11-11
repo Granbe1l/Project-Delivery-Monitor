@@ -1,5 +1,5 @@
 import { formatBrief, historyCoverage } from "./brief";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   NavLink,
   Navigate,
@@ -151,7 +151,7 @@ function FindingCard({ finding }: { finding: Finding }) {
         </small>
       </div>
       <h3>{finding.observation}</h3>
-      <p>{finding.explanation}</p>
+
       <div className="action">
         <ArrowRight size={16} />
         <span>{finding.recommendation}</span>
@@ -161,7 +161,8 @@ function FindingCard({ finding }: { finding: Finding }) {
         <small>{timestamp(finding.observed_at)}</small>
       </div>
       <details>
-        <summary>Interpretation limits</summary>
+        <summary>Why this finding · rule & interpretation</summary>
+        <p>{finding.explanation}</p>
         <p>{finding.limitations}</p>
       </details>
     </article>
@@ -171,6 +172,39 @@ function FindingCard({ finding }: { finding: Finding }) {
 export default function App() {
   const [params, setParams] = useSearchParams();
   const [menu, setMenu] = useState(false);
+  const navigation = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (!menu) return;
+    const mobile = matchMedia("(max-width: 700px)").matches;
+    if (!mobile) return;
+    const previous = document.activeElement as HTMLElement;
+    const oldOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const links =
+      navigation.current?.querySelectorAll<HTMLElement>("a, button");
+    links?.[0]?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenu(false);
+      if (e.key === "Tab" && links?.length) {
+        if (e.shiftKey && document.activeElement === links[0]) {
+          e.preventDefault();
+          links[links.length - 1].focus();
+        } else if (
+          !e.shiftKey &&
+          document.activeElement === links[links.length - 1]
+        ) {
+          e.preventDefault();
+          links[0].focus();
+        }
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = oldOverflow;
+      document.removeEventListener("keydown", onKey);
+      previous?.focus();
+    };
+  }, [menu]);
   const projects = useQuery({
     queryKey: ["projects"],
     queryFn: () => api<Project[]>("/projects"),
@@ -189,7 +223,21 @@ export default function App() {
       <a href="#content" className="skip">
         Skip to content
       </a>
-      <aside id="sidebar" className={menu ? "sidebar open" : "sidebar"}>
+      {menu && (
+        <button
+          className="drawer-backdrop"
+          aria-label="Close navigation overlay"
+          onClick={() => setMenu(false)}
+        />
+      )}
+      <aside
+        ref={navigation}
+        id="sidebar"
+        className={menu ? "sidebar open" : "sidebar"}
+      >
+        <button className="drawer-close" onClick={() => setMenu(false)}>
+          Close navigation
+        </button>
         <a className="brand" href="/overview">
           <span className="brand-mark">
             <GitBranch size={25} />
@@ -357,7 +405,10 @@ export default function App() {
                       />
                     }
                   />
-                  <Route path="/risks" element={<Risks info={info.data} />} />
+                  <Route
+                    path="/risks"
+                    element={<Risks key={selected.id} info={info.data} />}
+                  />
                   <Route
                     path="*"
                     element={<Navigate to={`/overview${suffix}`} replace />}
@@ -375,6 +426,37 @@ export default function App() {
     </div>
   );
 }
+function Distribution({
+  values,
+}: {
+  values: Record<string, number> | null | undefined;
+}) {
+  if (!values)
+    return <Empty detail="Distribution requires collected source data." />;
+  const total = Object.values(values).reduce((a, b) => a + b, 0);
+  return (
+    <div
+      className="distribution"
+      aria-label="Distribution of collected records"
+    >
+      {Object.entries(values).map(([label, count]) => (
+        <div className="distribution-row" key={label}>
+          <div>
+            <span>{label.replaceAll("_", " ")}</span>
+            <strong>{count}</strong>
+          </div>
+          <div className="bar-track" aria-hidden="true">
+            <div style={{ width: `${total ? (count / total) * 100 : 0}%` }} />
+          </div>
+        </div>
+      ))}
+      <p className="scope">
+        {total} collected records · shares of this observation only
+      </p>
+    </div>
+  );
+}
+
 function OverviewPage({ info, suffix }: { info: Overview; suffix: string }) {
   const findings = useQuery({
     queryKey: ["findings", info.project.id],
@@ -467,46 +549,18 @@ function OverviewPage({ info, suffix }: { info: Overview; suffix: string }) {
             />
           )}
         </section>
-        <section className="panel how-to">
-          <span className="eyebrow">A CLEARER PICTURE</span>
-          <h2>
-            From activity
-            <br />
-            to informed action.
-          </h2>
-          <p>Use delivery signals to decide what to investigate next.</p>
-          {[
-            [
-              "01",
-              "Observe the facts",
-              "Check timestamps and the scope of collected data.",
-            ],
-            [
-              "02",
-              "Understand the signal",
-              "Read why an item crosses a configured threshold.",
-            ],
-            [
-              "03",
-              "Review the evidence",
-              "Open the original GitHub record before acting.",
-            ],
-          ].map(([n, t, d]) => (
-            <div className="step" key={n}>
-              <span>{n}</span>
-              <div>
-                <h3>{t}</h3>
-                <p>{d}</p>
-              </div>
-            </div>
-          ))}
-          <div className="note">
-            <ShieldCheck size={20} />
+        <section className="panel">
+          <span className="eyebrow">COLLECTED OPEN ISSUES</span>
+          <h2>Issue age distribution</h2>
+          <p>Age at observation, not time overdue.</p>
+          <Distribution values={m?.issue_age_bins} />
+          <details>
+            <summary>How to use these signals</summary>
             <p>
-              No quality scores. No inferred deadlines. Every finding has a
-              source.
+              Check coverage and timestamps, then review the original GitHub
+              evidence before acting. No quality score or deadline is inferred.
             </p>
-          </div>
+          </details>
         </section>
       </div>
       <CoveragePanel info={info} />
@@ -546,19 +600,53 @@ function CoveragePanel({ info }: { info: Overview }) {
     </section>
   );
 }
+async function collectedPages(path: string): Promise<Page> {
+  const first = await api<Page>(`${path}?page_size=100&page=1`);
+  const items = [...first.items];
+  for (let page = 2; (page - 1) * 100 < first.total_in_observation; page++) {
+    const next = await api<Page>(`${path}?page_size=100&page=${page}`);
+    if (
+      next.observed_at !== first.observed_at ||
+      next.total_in_observation !== first.total_in_observation
+    )
+      throw new Error("Observation changed while loading. Please retry.");
+    items.push(...next.items);
+  }
+  return { ...first, items };
+}
 function Details({ info }: { info: Overview }) {
   const [milestonePage, setMilestonePage] = useState(1);
+  const [milestoneSearch, setMilestoneSearch] = useState("");
+  const [milestoneState, setMilestoneState] = useState("all");
+  const [historyPage, setHistoryPage] = useState(1);
   const trends = useQuery({
     queryKey: ["trends", info.project.id],
     queryFn: () => api<Trends>(`/projects/${info.project.id}/trends`),
   });
-  const milestones = useQuery({
-    queryKey: ["milestones", info.project.id, milestonePage],
-    queryFn: () =>
-      api<Page>(
-        `/projects/${info.project.id}/milestones?page_size=10&page=${milestonePage}`,
-      ),
+  const milestoneSource = useQuery({
+    queryKey: ["milestones", info.project.id],
+    queryFn: () => collectedPages(`/projects/${info.project.id}/milestones`),
   });
+  const matchingMilestones =
+    milestoneSource.data?.items.filter(
+      (m) =>
+        (m.title ?? "").toLowerCase().includes(milestoneSearch.toLowerCase()) &&
+        (milestoneState === "all" || m.state === milestoneState),
+    ) ?? [];
+  const milestones = {
+    ...milestoneSource,
+    data: milestoneSource.data
+      ? {
+          ...milestoneSource.data,
+          items: matchingMilestones.slice(
+            (milestonePage - 1) * 10,
+            milestonePage * 10,
+          ),
+          page_size: 10,
+          total_in_observation: matchingMilestones.length,
+        }
+      : undefined,
+  };
   return (
     <>
       <div className="section-heading">
@@ -624,18 +712,40 @@ function Details({ info }: { info: Overview }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {trends.data.points.map((p) => (
-                    <tr key={p.observed_at}>
-                      <td>{timestamp(p.observed_at)}</td>
-                      <td>{p.metrics.open_issues ?? "Unavailable"}</td>
-                      <td>{p.metrics.open_prs ?? "Unavailable"}</td>
-                      <td>{historyCoverage(p.coverage)}</td>
-                    </tr>
-                  ))}
+                  {trends.data.points
+                    .slice((historyPage - 1) * 5, historyPage * 5)
+                    .map((p) => (
+                      <tr key={p.observed_at}>
+                        <td>{timestamp(p.observed_at)}</td>
+                        <td>{p.metrics.open_issues ?? "Unavailable"}</td>
+                        <td>{p.metrics.open_prs ?? "Unavailable"}</td>
+                        <td>{historyCoverage(p.coverage)}</td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>
             <p className="scope">{trends.data.limitation}</p>
+            <div className="pagination">
+              <span>
+                History page {historyPage} · {trends.data.points.length}{" "}
+                observations
+              </span>
+              <div>
+                <button
+                  disabled={historyPage === 1}
+                  onClick={() => setHistoryPage(historyPage - 1)}
+                >
+                  Previous observations
+                </button>
+                <button
+                  disabled={historyPage * 5 >= trends.data.points.length}
+                  onClick={() => setHistoryPage(historyPage + 1)}
+                >
+                  Next observations
+                </button>
+              </div>
+            </div>
           </>
         )}
       </section>
@@ -648,6 +758,33 @@ function Details({ info }: { info: Overview }) {
           >
             <CircleHelp size={17} />
           </span>
+        </div>
+        <div className="filters milestone-filters">
+          <label>
+            Search milestones
+            <input
+              type="search"
+              value={milestoneSearch}
+              onChange={(e) => {
+                setMilestoneSearch(e.target.value);
+                setMilestonePage(1);
+              }}
+            />
+          </label>
+          <label>
+            Milestone state
+            <select
+              value={milestoneState}
+              onChange={(e) => {
+                setMilestoneState(e.target.value);
+                setMilestonePage(1);
+              }}
+            >
+              <option value="all">All states</option>
+              <option value="open">Open</option>
+              <option value="closed">Closed</option>
+            </select>
+          </label>
         </div>
         {milestones.isPending ? (
           <Loading />
@@ -736,12 +873,18 @@ function Records({
   const query = new URLSearchParams({
     q,
     page: String(page),
+    page_size: "10",
     ...(period ? { period } : {}),
     ...(branch ? { branch } : {}),
   });
   const rows = useQuery({
     queryKey: [kind, info.project.id, q, page, period, branch],
     queryFn: () => api<Page>(`/projects/${info.project.id}/${path}?${query}`),
+  });
+  const pullSummary = useQuery({
+    queryKey: ["pull-summary", info.project.id],
+    queryFn: () => collectedPages(`/projects/${info.project.id}/pull-requests`),
+    enabled: kind === "pulls",
   });
   const title =
     kind === "issues"
@@ -763,6 +906,29 @@ function Records({
           </p>
         </div>
       </div>
+      {kind === "pulls" && (
+        <div className="metrics pr-metrics">
+          <Metric
+            label="Open pull requests"
+            value={info.metrics?.open_prs}
+            help="Open proposed changes in collected records."
+          />
+          <Metric
+            label="Draft pull requests"
+            value={
+              pullSummary.data && pullSummary.data.coverage !== "unavailable"
+                ? pullSummary.data.items.filter((r) => r.draft).length
+                : null
+            }
+            help="Drafts in collected records; excluded from attention rules."
+          />
+          <Metric
+            label="PRs needing attention"
+            value={info.metrics?.prs_needing_attention}
+            help="Configured age or inactivity threshold; does not mean overdue."
+          />
+        </div>
+      )}
       {kind === "issues" && info.metrics?.issue_age_bins && (
         <div className="age-bins">
           {Object.entries(info.metrics.issue_age_bins).map(([bin, count]) => (
@@ -776,24 +942,7 @@ function Records({
       {kind === "ci" && info.metrics?.ci_conclusions && (
         <div className="panel">
           <h3>Completed default-branch runs · 30-day collected window</h3>
-          <div className="conclusions">
-            {[
-              "success",
-              "failure",
-              "cancelled",
-              "skipped",
-              "timed_out",
-              "neutral",
-              "action_required",
-              "stale",
-              "unknown",
-            ].map((key) => (
-              <span key={key}>
-                {key.replaceAll("_", " ")}{" "}
-                <strong>{info.metrics!.ci_conclusions![key] ?? 0}</strong>
-              </span>
-            ))}
-          </div>
+          <Distribution values={info.metrics.ci_conclusions} />
           <p className="scope">
             Denominator: {info.metrics.ci_completed} completed runs. In-progress
             runs are excluded. Categories are not combined into success or
@@ -988,6 +1137,28 @@ function Risks({ info }: { info: Overview }) {
     queryFn: () => api<Brief>(`/projects/${info.project.id}/brief`),
   });
   const [filter, setFilter] = useState("all");
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("source");
+  const [expanded, setExpanded] = useState(false);
+  const [findingPage, setFindingPage] = useState(1);
+  const matching = (brief.data?.findings ?? [])
+    .filter(
+      (f) =>
+        (filter === "all" || f.rule_id === filter) &&
+        `${f.observation} ${f.explanation} ${f.recommendation}`
+          .toLowerCase()
+          .includes(search.toLowerCase()),
+    )
+    .sort((a, b) =>
+      sort === "type"
+        ? a.rule_id.localeCompare(b.rule_id)
+        : sort === "recent"
+          ? b.observed_at.localeCompare(a.observed_at)
+          : 0,
+    );
+  const visible = expanded
+    ? matching.slice((findingPage - 1) * 10, findingPage * 10)
+    : matching.slice(0, 3);
   function download() {
     if (!brief.data) return;
     const content = formatBrief(brief.data);
@@ -1027,7 +1198,14 @@ function Risks({ info }: { info: Overview }) {
         </div>
         <label>
           Finding type
-          <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+          <select
+            aria-label="Finding type"
+            value={filter}
+            onChange={(e) => {
+              setFilter(e.target.value);
+              setFindingPage(1);
+            }}
+          >
             <option value="all">All findings</option>
             <option value="pr_age">Pull request age</option>
             <option value="ci_repeated_failure">CI failures</option>
@@ -1036,6 +1214,47 @@ function Risks({ info }: { info: Overview }) {
           </select>
         </label>
       </div>
+      <div className="filters">
+        <label>
+          Search findings
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setFindingPage(1);
+            }}
+            placeholder="Search observations or actions…"
+          />
+        </label>
+        <label>
+          Sort findings
+          <select
+            value={sort}
+            onChange={(e) => {
+              setSort(e.target.value);
+              setFindingPage(1);
+            }}
+          >
+            <option value="source">Rule order</option>
+            <option value="type">Finding type</option>
+            <option value="recent">Latest observation</option>
+          </select>
+        </label>
+        <button
+          onClick={() => {
+            setExpanded(!expanded);
+            setFindingPage(1);
+          }}
+        >
+          {expanded ? "Show top 3" : `Browse all ${matching.length} findings`}
+        </button>
+      </div>
+      <p className="scope">
+        {matching.length} matching findings ·{" "}
+        {expanded ? "10 per page" : "First 3 in selected order"}. Rule order is
+        not a ranking of project risk.
+      </p>
       {brief.isPending ? (
         <Loading />
       ) : brief.error ? (
@@ -1046,15 +1265,36 @@ function Risks({ info }: { info: Overview }) {
             <section className="panel">
               <Empty detail="Recommendations require verified source data. No risk status has been assigned." />
             </section>
-          ) : brief.data?.findings.filter(
-              (f) => filter === "all" || f.rule_id === filter,
-            ).length ? (
+          ) : matching.length ? (
             <div className="risk-grid">
-              {brief.data.findings
-                .filter((f) => filter === "all" || f.rule_id === filter)
-                .map((f, i) => (
-                  <FindingCard finding={f} key={i} />
-                ))}
+              {visible.map((f, i) => (
+                <FindingCard
+                  finding={f}
+                  key={`${f.rule_id}-${f.subject_id}-${i}`}
+                />
+              ))}
+              {expanded && (
+                <div className="pagination">
+                  <span>
+                    Page {findingPage} of{" "}
+                    {Math.max(1, Math.ceil(matching.length / 10))}
+                  </span>
+                  <div>
+                    <button
+                      disabled={findingPage === 1}
+                      onClick={() => setFindingPage(findingPage - 1)}
+                    >
+                      Previous findings
+                    </button>
+                    <button
+                      disabled={findingPage * 10 >= matching.length}
+                      onClick={() => setFindingPage(findingPage + 1)}
+                    >
+                      Next findings
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <section className="panel">
@@ -1069,17 +1309,20 @@ function Risks({ info }: { info: Overview }) {
               <CircleHelp size={18} />
               How to interpret this brief
             </h3>
-            <ul>
-              {brief.data?.limitations.map((l) => (
-                <li key={l}>{l}</li>
-              ))}
-            </ul>
-            <p>
-              Configured thresholds: PR age {info.policy.pr_age_days} days ·
-              inactivity {info.policy.pr_idle_days} days · repeated CI failures{" "}
-              {info.policy.ci_failure_threshold} · stale after{" "}
-              {info.policy.stale_hours} hours.
-            </p>
+            <details>
+              <summary>Scope, thresholds & interpretation limits</summary>
+              <ul>
+                {brief.data?.limitations.map((l) => (
+                  <li key={l}>{l}</li>
+                ))}
+              </ul>
+              <p>
+                Configured thresholds: PR age {info.policy.pr_age_days} days ·
+                inactivity {info.policy.pr_idle_days} days · repeated CI
+                failures {info.policy.ci_failure_threshold} · stale after{" "}
+                {info.policy.stale_hours} hours.
+              </p>
+            </details>
           </section>
         </>
       )}

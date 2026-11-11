@@ -39,7 +39,7 @@ test("TEST DATA only: empty states, routes, selection and mobile layout", async 
         items: [],
         total_in_observation: 0,
         page: 1,
-        page_size: 25,
+        page_size: 10,
         coverage: "unavailable",
         observed_at: null,
       },
@@ -135,14 +135,18 @@ test("TEST DATA only: populated search, pagination, evidence and brief export", 
     else if (url.pathname.endsWith("/pull-requests")) {
       const q = url.searchParams.get("q") || "";
       const pageNumber = Number(url.searchParams.get("page") || "1");
+      const pageSize = Number(url.searchParams.get("page_size") || "25");
       const matching = fixture.pulls.filter((p) =>
         p.title.toLowerCase().includes(q.toLowerCase()),
       );
       response = {
-        items: matching.slice((pageNumber - 1) * 25, pageNumber * 25),
+        items: matching.slice(
+          (pageNumber - 1) * pageSize,
+          pageNumber * pageSize,
+        ),
         total_in_observation: matching.length,
         page: pageNumber,
-        page_size: 25,
+        page_size: pageSize,
         coverage: "complete",
         observed_at: observed,
       };
@@ -157,7 +161,7 @@ test("TEST DATA only: populated search, pagination, evidence and brief export", 
   await expect(page.getByText("26 matching collected records")).toBeVisible();
   await page.getByRole("button", { name: "Next page" }).click();
   await expect(
-    page.getByText("TEST DATA: change 26", { exact: true }),
+    page.getByText("TEST DATA: change 11", { exact: true }),
   ).toBeVisible();
   await expect(
     page.getByText("TEST DATA: change 01", { exact: true }),
@@ -179,7 +183,9 @@ test("TEST DATA only: populated search, pagination, evidence and brief export", 
   expect(content).toContain(fixture.findings[0].evidence_url);
   expect(content).toContain("pr_age v1.0");
   expect(content).toContain("SYNTHETIC TEST DATA");
-  await page.getByLabel("Finding type").selectOption("milestone_due");
+  await page
+    .getByLabel("Finding type", { exact: true })
+    .selectOption("milestone_due");
   await expect(
     page.getByRole("heading", { name: "No matching findings" }),
   ).toBeVisible();

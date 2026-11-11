@@ -76,7 +76,9 @@ test("live records support search, paging, source evidence, history and brief do
   await page.getByLabel("Search titles").fill("");
   if (pulls.total_in_observation > pulls.page_size) {
     const next: Page = await (
-      await request.get(`/api/projects/${project.id}/pull-requests?page=2`)
+      await request.get(
+        `/api/projects/${project.id}/pull-requests?page_size=10&page=2`,
+      )
     ).json();
     await page.getByRole("button", { name: "Next page" }).click();
     await expect(
@@ -103,7 +105,7 @@ test("live records support search, paging, source evidence, history and brief do
     page.getByRole("heading", { name: "Observation history" }),
   ).toBeVisible();
   await expect(page.locator("table tbody tr")).toHaveCount(
-    trends.points.length,
+    Math.min(5, trends.points.length),
   );
 });
 
