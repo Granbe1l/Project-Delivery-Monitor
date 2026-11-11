@@ -1,3 +1,4 @@
+import { keyFindings } from "./insights";
 import { formatBrief, historyCoverage } from "./brief";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -563,6 +564,29 @@ function OverviewPage({ info, suffix }: { info: Overview; suffix: string }) {
         <CircleHelp size={14} />
         {info.scope}
       </p>
+      <section className="panel key-findings">
+        <h2>Key Findings</h2>
+        <div className="insight-grid">
+          {keyFindings(info).length ? (
+            keyFindings(info).map((f) => (
+              <article key={f.source}>
+                <h3>{f.title}</h3>
+                <small>{f.sample}</small>
+                <p>{f.action}</p>
+                <details>
+                  <summary>Why it matters & methodology</summary>
+                  <p>{f.meaning}</p>
+                </details>
+                <NavLink className="evidence" to={`/${f.source}${suffix}`}>
+                  Inspect source records <ArrowRight size={14} />
+                </NavLink>
+              </article>
+            ))
+          ) : (
+            <p>Insufficient data for quantitative findings.</p>
+          )}
+        </div>
+      </section>
       <div className="overview-grid">
         <section className="panel">
           <div className="panel-heading">
@@ -618,7 +642,7 @@ function CoveragePanel({ info }: { info: Overview }) {
   return (
     <section className="panel coverage-panel">
       <div>
-        <h2>Data confidence starts with coverage</h2>
+        <h2>Data Quality</h2>
         <p>
           Collection status for each source. Partial means collection stopped
           before all records were fetched. Counts are a sample, never a

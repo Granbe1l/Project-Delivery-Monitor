@@ -1,0 +1,26 @@
+[
+  {
+    "project": 1,
+    "findings": [
+      "69% of collected open issues are at least 30 days old.84 / 122 collected records · partialReview older issues for relevance, ownership and the next decision.Why it matters & methodologyThis describes age, not delay or backlog quality.Inspect source records ",
+      "18% of collected open PRs meet an attention rule.34 / 194 collected records · completeCheck review requests and recent discussion before deciding a next step.Why it matters & methodologyNon-draft PRs cross the 14-day age or 14-day inactivity threshold. The denominator includes drafts.Inspect source records ",
+      "0% of collected completed checks ended in failure.0 / 20 collected records · partialReview skipped and other outcomes before drawing conclusions from zero failures.Why it matters & methodologyDefault branch, 30-day collection window. Other conclusions remain distinct; this does not measure production reliability.Inspect source records "
+    ]
+  },
+  {
+    "project": 2,
+    "findings": [
+      "32% of collected open issues are at least 30 days old.7 / 22 collected records · partialReview older issues for relevance, ownership and the next decision.Why it matters & methodologyThis describes age, not delay or backlog quality.Inspect source records ",
+      "25% of collected open PRs meet an attention rule.50 / 200 collected records · partialCheck review requests and recent discussion before deciding a next step.Why it matters & methodologyNon-draft PRs cross the 14-day age or 14-day inactivity threshold. The denominator includes drafts.Inspect source records ",
+      "1% of collected completed checks ended in failure.1 / 150 collected records · partialInspect failed run logs and subsequent runs for the same workflow.Why it matters & methodologyDefault branch, 30-day collection window. Other conclusions remain distinct; this does not measure production reliability.Inspect source records "
+    ]
+  },
+  {
+    "project": 3,
+    "findings": [
+      "38% of collected open issues are at least 30 days old.6 / 16 collected records · partialReview older issues for relevance, ownership and the next decision.Why it matters & methodologyThis describes age, not delay or backlog quality.Inspect source records ",
+      "25% of collected open PRs meet an attention rule.49 / 200 collected records · partialCheck review requests and recent discussion before deciding a next step.Why it matters & methodologyNon-draft PRs cross the 14-day age or 14-day inactivity threshold. The denominator includes drafts.Inspect source records ",
+      "0% of collected completed checks ended in failure.0 / 126 collected records · partialReview skipped and other outcomes before drawing conclusions from zero failures.Why it matters & methodologyDefault branch, 30-day collection window. Other conclusions remain distinct; this does not measure production reliability.Inspect source records "
+    ]
+  }
+]
