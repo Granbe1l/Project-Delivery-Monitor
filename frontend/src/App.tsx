@@ -6,6 +6,7 @@ import {
   Route,
   Routes,
   useSearchParams,
+  useLocation,
 } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -141,14 +142,42 @@ function Badge({ value }: { value: string }) {
     </span>
   );
 }
+function PageNumbers({
+  page,
+  total,
+  onChange,
+}: {
+  page: number;
+  total: number;
+  onChange: (page: number) => void;
+}) {
+  const pages = Array.from(
+    { length: Math.max(1, total) },
+    (_, i) => i + 1,
+  ).filter((n) => n === 1 || n === total || Math.abs(n - page) <= 1);
+  return (
+    <span className="page-numbers">
+      {pages.map((n, i) => (
+        <span key={n}>
+          {i > 0 && n - pages[i - 1] > 1 && <span className="page-gap">…</span>}
+          <button
+            aria-label={`Go to page ${n}`}
+            aria-current={n === page ? "page" : undefined}
+            onClick={() => onChange(n)}
+          >
+            {n}
+          </button>
+        </span>
+      ))}
+    </span>
+  );
+}
+
 function FindingCard({ finding }: { finding: Finding }) {
   return (
     <article className="finding">
       <div className="finding-top">
         <Badge value={finding.severity} />
-        <small>
-          {finding.rule_id} · v{finding.rule_version}
-        </small>
       </div>
       <h3>{finding.observation}</h3>
 
@@ -158,10 +187,13 @@ function FindingCard({ finding }: { finding: Finding }) {
       </div>
       <div className="finding-foot">
         <Evidence url={finding.evidence_url} />
-        <small>{timestamp(finding.observed_at)}</small>
       </div>
       <details>
         <summary>Why this finding · rule & interpretation</summary>
+        <small>
+          {finding.rule_id} · v{finding.rule_version} ·{" "}
+          {timestamp(finding.observed_at)}
+        </small>
         <p>{finding.explanation}</p>
         <p>{finding.limitations}</p>
       </details>
@@ -171,6 +203,8 @@ function FindingCard({ finding }: { finding: Finding }) {
 
 export default function App() {
   const [params, setParams] = useSearchParams();
+  const location = useLocation();
+  const section = sections.find(([path]) => location.pathname === `/${path}`);
   const [menu, setMenu] = useState(false);
   const navigation = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -219,7 +253,7 @@ export default function App() {
   });
   const suffix = selected ? `?project=${selected.id}` : "";
   return (
-    <div className="app">
+    <div className={`app view-${section?.[0] ?? "overview"}`}>
       <a href="#content" className="skip">
         Skip to content
       </a>
@@ -295,11 +329,14 @@ export default function App() {
           <div className="page-heading">
             <div className="eyebrow">SOFTWARE DELIVERY OBSERVATORY</div>
             <h1>
-              Project Delivery Monitor<span className="title-dot">.</span>
+              {section?.[0] === "overview"
+                ? "Project Delivery Monitor"
+                : (section?.[1] ?? "Project Delivery Monitor")}
             </h1>
             <p>
-              Monitor development work, spot items needing attention, and review
-              supporting evidence.
+              {section?.[0] === "overview"
+                ? "Monitor development work, spot items needing attention, and review supporting evidence."
+                : "Collected GitHub activity, with transparent scope and original evidence."}
             </p>
           </div>
           <div className="project-toolbar">
@@ -428,15 +465,17 @@ export default function App() {
 }
 function Distribution({
   values,
+  vertical = false,
 }: {
   values: Record<string, number> | null | undefined;
+  vertical?: boolean;
 }) {
   if (!values)
     return <Empty detail="Distribution requires collected source data." />;
   const total = Object.values(values).reduce((a, b) => a + b, 0);
   return (
     <div
-      className="distribution"
+      className={vertical ? "distribution vertical-chart" : "distribution"}
       aria-label="Distribution of collected records"
     >
       {Object.entries(values).map(([label, count]) => (
@@ -446,7 +485,15 @@ function Distribution({
             <strong>{count}</strong>
           </div>
           <div className="bar-track" aria-hidden="true">
-            <div style={{ width: `${total ? (count / total) * 100 : 0}%` }} />
+            <div
+              style={
+                vertical
+                  ? {
+                      height: `${Math.max(...Object.values(values)) ? (count / Math.max(...Object.values(values))) * 100 : 0}%`,
+                    }
+                  : { width: `${total ? (count / total) * 100 : 0}%` }
+              }
+            />
           </div>
         </div>
       ))}
@@ -553,7 +600,7 @@ function OverviewPage({ info, suffix }: { info: Overview; suffix: string }) {
           <span className="eyebrow">COLLECTED OPEN ISSUES</span>
           <h2>Issue age distribution</h2>
           <p>Age at observation, not time overdue.</p>
-          <Distribution values={m?.issue_age_bins} />
+          <Distribution values={m?.issue_age_bins} vertical />
           <details>
             <summary>How to use these signals</summary>
             <p>
@@ -738,6 +785,11 @@ function Details({ info }: { info: Overview }) {
                 >
                   Previous observations
                 </button>
+                <PageNumbers
+                  page={historyPage}
+                  total={Math.ceil(trends.data.points.length / 5)}
+                  onChange={setHistoryPage}
+                />
                 <button
                   disabled={historyPage * 5 >= trends.data.points.length}
                   onClick={() => setHistoryPage(historyPage + 1)}
@@ -832,6 +884,11 @@ function Details({ info }: { info: Overview }) {
                 >
                   <ChevronLeft size={16} />
                 </button>
+                <PageNumbers
+                  page={milestonePage}
+                  total={Math.ceil(milestones.data.total_in_observation / 10)}
+                  onChange={setMilestonePage}
+                />
                 <button
                   aria-label="Next milestone page"
                   disabled={
@@ -940,7 +997,33 @@ function Records({
         </div>
       )}
       {kind === "ci" && info.metrics?.ci_conclusions && (
-        <div className="panel">
+        <div className="panel ci-summary">
+          <div className="metrics">
+            <Metric
+              label="Completed checks"
+              value={info.metrics.ci_completed}
+              help="Collected default-branch runs in the 30-day window."
+            />
+            <Metric
+              label="Failed checks"
+              value={info.metrics.ci_failures}
+              help="Failures among those completed checks; not production incidents."
+            />
+            <Metric
+              label="Successful checks"
+              value={info.metrics.ci_conclusions.success ?? 0}
+              help="Only the success conclusion in the same collected window."
+            />
+            <Metric
+              label="Success share"
+              value={
+                info.metrics.ci_completed
+                  ? `${Math.round(((info.metrics.ci_conclusions.success ?? 0) / info.metrics.ci_completed) * 100)}%`
+                  : null
+              }
+              help="Successful divided by completed collected default-branch runs. Unavailable with no completed runs."
+            />
+          </div>
           <h3>Completed default-branch runs · 30-day collected window</h3>
           <Distribution values={info.metrics.ci_conclusions} />
           <p className="scope">
@@ -1050,7 +1133,7 @@ function Records({
                     <tbody>
                       {rows.data.items.map((r) => (
                         <tr key={r.github_id}>
-                          <td>
+                          <td data-label="Title / source">
                             <strong>{r.title ?? r.name}</strong>
                             <small>
                               {r.number ? `#${r.number}` : `Run ${r.github_id}`}
@@ -1059,7 +1142,7 @@ function Records({
                                 : ""}
                             </small>
                           </td>
-                          <td>
+                          <td data-label="State / branch">
                             {kind === "ci" ? (
                               <>
                                 {r.branch ?? "Unknown branch"}
@@ -1073,7 +1156,7 @@ function Records({
                               />
                             )}
                           </td>
-                          <td>
+                          <td data-label="Age / result">
                             {kind === "ci" ? (
                               <>
                                 <Badge value={r.status ?? "unknown"} />
@@ -1085,7 +1168,7 @@ function Records({
                               `${age(r.created_at, rows.data!.observed_at)} days`
                             )}
                           </td>
-                          <td>
+                          <td data-label="Evidence / last update">
                             {kind === "pulls" && (
                               <small>
                                 {age(r.updated_at, rows.data!.observed_at)} days
@@ -1112,6 +1195,13 @@ function Records({
                   >
                     <ChevronLeft size={16} />
                   </button>
+                  <PageNumbers
+                    page={page}
+                    total={Math.ceil(
+                      rows.data.total_in_observation / rows.data.page_size,
+                    )}
+                    onChange={setPage}
+                  />
                   <button
                     aria-label="Next page"
                     disabled={
@@ -1187,6 +1277,28 @@ function Risks({ info }: { info: Overview }) {
           </button>
         )}
       </div>
+      {brief.data && (
+        <div className="metrics findings-summary">
+          <Metric
+            label="Total findings"
+            value={brief.data.findings.length}
+            help="Configured rules matched in this observation. Not a project risk score."
+          />
+          {Array.from(new Set(brief.data.findings.map((f) => f.severity))).map(
+            (severity) => (
+              <Metric
+                key={severity}
+                label={severity.replaceAll("_", " ")}
+                value={
+                  brief.data!.findings.filter((f) => f.severity === severity)
+                    .length
+                }
+                help="Severity assigned by the existing deterministic rule."
+              />
+            ),
+          )}
+        </div>
+      )}
       <div className="brief-intro">
         <div>
           <span className="eyebrow">PROJECT INTELLIGENCE BRIEF</span>
@@ -1286,6 +1398,11 @@ function Risks({ info }: { info: Overview }) {
                     >
                       Previous findings
                     </button>
+                    <PageNumbers
+                      page={findingPage}
+                      total={Math.ceil(matching.length / 10)}
+                      onChange={setFindingPage}
+                    />
                     <button
                       disabled={findingPage * 10 >= matching.length}
                       onClick={() => setFindingPage(findingPage + 1)}

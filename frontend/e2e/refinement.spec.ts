@@ -32,6 +32,13 @@ test("live refinement: bounded findings, search, sort, disclosure and drawer key
     await page.goto(`/${route}?project=1`);
     await expect(page.locator("tbody tr").first()).toBeVisible();
     expect(await page.locator("tbody tr").count()).toBeLessThanOrEqual(10);
+    await page
+      .getByRole("button", { name: "Go to page 2", exact: true })
+      .click();
+    await expect(
+      page.getByRole("button", { name: "Go to page 2", exact: true }),
+    ).toHaveAttribute("aria-current", "page");
+    await expect(page.locator(".pagination")).toContainText("Page 2");
   }
   await page.goto("/details?project=2");
   await page.getByLabel("Search milestones").fill("no-match-pdm-7328");

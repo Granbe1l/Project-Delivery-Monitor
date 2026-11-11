@@ -49,7 +49,7 @@ test("TEST DATA only: empty states, routes, selection and mobile layout", async 
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/overview");
   await expect(
-    page.getByRole("heading", { name: "Project Delivery Monitor." }),
+    page.getByRole("heading", { name: "Project Delivery Monitor" }),
   ).toBeVisible();
   await expect(
     page.locator(".metric").first().getByText("Data unavailable"),
