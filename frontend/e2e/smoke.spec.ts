@@ -252,6 +252,7 @@ test("TEST DATA only: stale and retained sources preserve warnings, scope and ex
     "last successful observations",
   );
   await expect(page.locator(".metric strong").nth(1)).toHaveText("26");
+  await page.locator(".source-quality > summary").click();
   await expect(page.getByText("retained · refresh failed")).toBeVisible();
   await page.locator('nav a[href^="/details"]').click();
   await expect(page.locator("table tbody")).toContainText(

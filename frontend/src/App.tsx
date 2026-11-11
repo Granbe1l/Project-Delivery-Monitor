@@ -172,7 +172,13 @@ function PageNumbers({
   );
 }
 
-function FindingCard({ finding }: { finding: Finding }) {
+function FindingCard({
+  finding,
+  grouped = false,
+}: {
+  finding: Finding;
+  grouped?: boolean;
+}) {
   return (
     <article className="finding">
       <div className="finding-top">
@@ -180,10 +186,12 @@ function FindingCard({ finding }: { finding: Finding }) {
       </div>
       <h3>{finding.observation}</h3>
 
-      <div className="action">
-        <ArrowRight size={16} />
-        <span>{finding.recommendation}</span>
-      </div>
+      {!grouped && (
+        <div className="action">
+          <ArrowRight size={16} />
+          <span>{finding.recommendation}</span>
+        </div>
+      )}
       <div className="finding-foot">
         <Evidence url={finding.evidence_url} />
       </div>
@@ -334,7 +342,7 @@ export default function App() {
             </h1>
             <p>
               {section?.[0] === "overview"
-                ? "Monitor development work, spot items needing attention, and review supporting evidence."
+                ? "Understand software work, decide what to review, and check the evidence."
                 : "Collected GitHub activity, with transparent scope and original evidence."}
             </p>
           </div>
@@ -532,6 +540,28 @@ function OverviewPage({ info, suffix }: { info: Overview; suffix: string }) {
           }
         />
       </div>
+      <section className="executive-insight key-findings">
+        <span className="eyebrow">EXECUTIVE INSIGHT · CURRENT OBSERVATION</span>
+        {keyFindings(info)
+          .slice(0, 1)
+          .map((f) => (
+            <article key={f.source}>
+              <h2>{f.title}</h2>
+              <p>{f.meaning}</p>
+              <div className="executive-action">
+                <strong>Review next</strong>
+                <span>{f.action}</span>
+                <NavLink className="evidence" to={`/${f.source}${suffix}`}>
+                  Inspect evidence <ArrowRight size={14} />
+                </NavLink>
+              </div>
+              <small>{f.sample}</small>
+            </article>
+          ))}
+        {!keyFindings(info).length && (
+          <p>Insufficient data for a quantitative conclusion.</p>
+        )}
+      </section>
       <div className="metrics">
         <Metric
           label="Open issues"
@@ -562,29 +592,6 @@ function OverviewPage({ info, suffix }: { info: Overview; suffix: string }) {
         <CircleHelp size={14} />
         {info.scope}
       </p>
-      <section className="panel key-findings">
-        <h2>Key Findings</h2>
-        <div className="insight-grid">
-          {keyFindings(info).length ? (
-            keyFindings(info).map((f) => (
-              <article key={f.source}>
-                <h3>{f.title}</h3>
-                <small>{f.sample}</small>
-                <p>{f.action}</p>
-                <details>
-                  <summary>Why it matters & methodology</summary>
-                  <p>{f.meaning}</p>
-                </details>
-                <NavLink className="evidence" to={`/${f.source}${suffix}`}>
-                  Inspect source records <ArrowRight size={14} />
-                </NavLink>
-              </article>
-            ))
-          ) : (
-            <p>Insufficient data for quantitative findings.</p>
-          )}
-        </div>
-      </section>
       <div className="overview-grid">
         <section className="panel">
           <div className="panel-heading">
@@ -607,9 +614,32 @@ function OverviewPage({ info, suffix }: { info: Overview; suffix: string }) {
             <Empty detail="Once GitHub data is collected, evidence-backed observations will appear here. No scores or estimates are substituted." />
           ) : findings.data?.length ? (
             <div className="findings-list">
-              {findings.data.slice(0, 3).map((f, i) => (
-                <FindingCard key={i} finding={f} />
-              ))}
+              {Array.from(
+                new Set(
+                  findings.data.map((f) => `${f.rule_id}|${f.recommendation}`),
+                ),
+              )
+                .slice(0, 3)
+                .map((key) => {
+                  const related = findings.data!.filter(
+                    (f) => `${f.rule_id}|${f.recommendation}` === key,
+                  );
+                  return (
+                    <article className="finding review-group" key={key}>
+                      <h3>
+                        {related.length} items ·{" "}
+                        {related[0].rule_id.replaceAll("_", " ")}
+                      </h3>
+                      <p>{related[0].recommendation}</p>
+                      <Evidence url={related[0].evidence_url}>
+                        Example evidence
+                      </Evidence>
+                      <NavLink className="evidence" to={`/risks${suffix}`}>
+                        Review related items <ArrowRight size={14} />
+                      </NavLink>
+                    </article>
+                  );
+                })}
             </div>
           ) : (
             <Empty
@@ -652,26 +682,29 @@ function CoveragePanel({ info }: { info: Overview }) {
           </p>
         </details>
       </div>
-      <div className="coverage-grid">
-        {[
-          ["issues", "Issues"],
-          ["pulls", "Pull requests"],
-          ["workflows", "Workflow runs"],
-          ["milestones", "Milestones"],
-        ].map(([key, label]) => (
-          <div key={key}>
-            <span>{label}</span>
-            <Badge
-              value={
-                info.coverage[key]?.retained
-                  ? "retained · refresh failed"
-                  : (info.coverage[key]?.coverage ?? "unavailable")
-              }
-            />
-            <small>{timestamp(info.coverage[key]?.observed_at)}</small>
-          </div>
-        ))}
-      </div>
+      <details className="source-quality">
+        <summary>Source coverage & check times</summary>
+        <div className="coverage-grid">
+          {[
+            ["issues", "Issues"],
+            ["pulls", "Pull requests"],
+            ["workflows", "Workflow runs"],
+            ["milestones", "Milestones"],
+          ].map(([key, label]) => (
+            <div key={key}>
+              <span>{label}</span>
+              <Badge
+                value={
+                  info.coverage[key]?.retained
+                    ? "retained · refresh failed"
+                    : (info.coverage[key]?.coverage ?? "unavailable")
+                }
+              />
+              <small>{timestamp(info.coverage[key]?.observed_at)}</small>
+            </div>
+          ))}
+        </div>
+      </details>
     </section>
   );
 }
@@ -1502,12 +1535,40 @@ function Risks({ info }: { info: Overview }) {
             </section>
           ) : matching.length ? (
             <div className="risk-grid">
-              {visible.map((f, i) => (
-                <FindingCard
-                  finding={f}
-                  key={`${f.rule_id}-${f.subject_id}-${i}`}
-                />
-              ))}
+              {Array.from(
+                new Set(visible.map((f) => `${f.rule_id}|${f.recommendation}`)),
+              ).map((key) => {
+                const related = visible.filter(
+                  (f) => `${f.rule_id}|${f.recommendation}` === key,
+                );
+                const count = matching.filter(
+                  (f) => `${f.rule_id}|${f.recommendation}` === key,
+                ).length;
+                return (
+                  <section className="rule-group" key={key}>
+                    <header>
+                      <h3>{related[0].rule_id.replaceAll("_", " ")}</h3>
+                      <Badge value={`${count} matching items`} />
+                    </header>
+                    <p className="group-action">
+                      <strong>Suggested review: </strong>
+                      {related[0].recommendation}
+                    </p>
+                    <details open>
+                      <summary>
+                        Related evidence · {related.length} items on this page
+                      </summary>
+                      {related.map((f, i) => (
+                        <FindingCard
+                          finding={f}
+                          grouped
+                          key={`${f.subject_id}-${i}`}
+                        />
+                      ))}
+                    </details>
+                  </section>
+                );
+              })}
               {expanded && (
                 <div className="pagination">
                   <span>

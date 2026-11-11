@@ -54,3 +54,19 @@ test("live refinement: bounded findings, search, sort, disclosure and drawer key
   ).toBeFocused();
   await expect(page.locator(".sidebar")).not.toBeVisible();
 });
+
+test("executive conclusion precedes metrics and repeated findings share a rule group", async ({
+  page,
+}) => {
+  await page.goto("/overview?project=1");
+  await expect(page.locator(".executive-insight article")).toHaveCount(1);
+  const hero = await page.locator(".executive-insight").boundingBox();
+  const metrics = await page.locator(".metrics").first().boundingBox();
+  expect(hero!.y).toBeLessThan(metrics!.y);
+  expect(hero!.y + hero!.height).toBeLessThan(1000);
+  await page.goto("/risks?project=1");
+  await expect(page.locator(".rule-group")).toHaveCount(1);
+  await expect(page.locator(".rule-group .group-action")).toHaveCount(1);
+  await expect(page.locator(".rule-group .finding .action")).toHaveCount(0);
+  await expect(page.locator(".rule-group .finding .evidence")).toHaveCount(3);
+});
