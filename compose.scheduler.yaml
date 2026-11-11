@@ -1,0 +1,16 @@
+# Opt-in local/container scheduler: docker compose -f compose.yaml -f compose.scheduler.yaml --profile sync up -d scheduler
+services:
+  scheduler:
+    profiles: [sync]
+    build: ./backend
+    command: ['python', '-m', 'app.jobs.scheduler']
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://pdm:${POSTGRES_PASSWORD:-pdm_local_only}@db:5432/pdm
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      SYNC_INTERVAL_SECONDS: ${SYNC_INTERVAL_SECONDS:-21600}
+      SYNC_MAX_PAGES: ${SYNC_MAX_PAGES:-2}
+      SYNC_REQUEST_BUDGET: ${SYNC_REQUEST_BUDGET:-35}
+    depends_on:
+      db:
+        condition: service_healthy

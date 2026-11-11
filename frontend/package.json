@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "tsc -b && vite build",
+    "build": "node scripts/check-deployment.mjs && tsc -b && vite build",
     "typecheck": "tsc -b",
     "lint": "eslint .",
-    "test": "vitest run",
+    "test": "vitest run && node --test scripts/check-deployment.check.mjs",
     "test:e2e": "playwright test smoke.spec.ts",
     "format:check": "prettier --check src",
     "test:e2e:live": "playwright test live.spec.ts"

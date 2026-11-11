@@ -48,3 +48,25 @@ Example schedule: every 12 hours (`0 */12 * * *`, UTC), after verifying quota an
 4. Sync again; verify unique records stay unique and a second real snapshot appears.
 5. Verify report export, populated tables, filters, stale/failure recovery and deployed frontend/backend connectivity.
 6. Enable a scheduler only after those checks; confirm a later scheduled run actually completed before claiming periodic refresh.
+
+## Updated Vercel setup (root import)
+
+Import GitHub branch `work`, leave Root Directory as repository root (`.`). Root `vercel.json` installs/builds `frontend` and publishes `frontend/dist`. Alternatively retain the existing `frontend` Root Directory setup; its own `vercel.json` remains valid. Do not mix root commands with the frontend Root Directory.
+
+Before clicking Deploy set `VITE_PUBLIC_API_BASE_URL=https://<your-public-fastapi-host>` (no trailing slash and no `/api`). Vercel builds now validate this value. Deploying only the static frontend does not deploy FastAPI or PostgreSQL. `api.example.com` is a validation-test placeholder, never a working production backend.
+
+Backend remains the existing Docker service in `render.yaml`; it now uses the provider PORT with 8000 fallback. Create persistent PostgreSQL, configure its TLS URL as DATABASE_URL, and set CORS_ORIGINS to your exact Vercel production origin. The template is single-instance: migrations/init run before startup. For multiple replicas serialize migrations in a release job instead.
+
+## Implemented opt-in scheduler worker
+
+`python -m app.jobs.scheduler` runs the existing three-repository CLI service immediately, then waits `SYNC_INTERVAL_SECONDS` (default 21600 = six hours) after each completed cycle. This is fixed delay, not wall-clock cron. It runs cycles serially, survives errors without printing exception secrets, and stops waiting on SIGTERM. In-flight cycles finish gracefully; platform termination can still interrupt them, and the database transaction rolls back on connection closure. Existing per-repository advisory locks protect concurrent processes, and upserts preserve item identity.
+
+Provision a separate worker using the same backend Dockerfile only after approving hosting costs. Supply the same DATABASE_URL, optional server-only GITHUB_TOKEN, SYNC_INTERVAL_SECONDS and collector budgets. Initialize schema and repository identities before starting the worker. Local opt-in example (not activated automatically):
+
+```bash
+docker compose -f compose.yaml -f compose.scheduler.yaml --profile sync up -d scheduler
+```
+
+Do not configure both this continuous worker and an external cron for the same schedule. No public sync HTTP endpoint, GitHub Actions schedule or paid worker is activated by this commit. Local timer tests use a stub cycle to verify real short waits, serial execution, error recovery and shutdown; they are not proof of successful scheduled GitHub collection or public deployment. Verify at least two real job runs and source timestamps after deployment. Partial results can exit zero: inspect per-source coverage, not exit code alone.
+
+Current provider pricing, free-tier sleep/expiry and Vercel Services eligibility still require checking before provisioning. This configuration deliberately keeps long-running collection outside Vercel requests.

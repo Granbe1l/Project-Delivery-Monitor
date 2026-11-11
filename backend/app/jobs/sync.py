@@ -24,9 +24,13 @@ async def main():
         from app.jobs.preflight import check
 
         return await check([args.repo] if args.repo else REPOSITORIES)
+    return await run_repositories([args.repo] if args.repo else REPOSITORIES)
+
+
+async def run_repositories(repositories=REPOSITORIES):
     results = []
     async with GitHubClient() as client:
-        for repo in [args.repo] if args.repo else REPOSITORIES:
+        for repo in repositories:
             try:
                 with Session() as db:
                     results.append(await synchronize(db, repo, client))
