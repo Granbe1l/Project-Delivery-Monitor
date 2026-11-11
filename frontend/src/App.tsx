@@ -358,7 +358,7 @@ export default function App() {
             <div className="last-sync">
               <Clock3 size={16} />
               <span>
-                Last observed{" "}
+                Data last checked{" "}
                 <strong>{timestamp(info.data?.observed_at)}</strong>
               </span>
             </div>
@@ -542,7 +542,7 @@ function OverviewPage({ info, suffix }: { info: Overview; suffix: string }) {
         <Metric
           label="Open pull requests"
           value={m?.open_prs}
-          help="A pull request proposes a code change. Counts cover the collected records."
+          help="A pull request proposes a code change. Drafts are included in open PRs. Counts cover collected records."
         />
         <Metric
           label="PRs needing attention"
@@ -550,7 +550,7 @@ function OverviewPage({ info, suffix }: { info: Overview; suffix: string }) {
           help={`Non-draft PRs older than ${info.policy.pr_age_days} days or not updated for ${info.policy.pr_idle_days} days.`}
         />
         <Metric
-          label="CI failures / completed"
+          label="Failed / completed checks"
           value={
             m?.ci_failures == null
               ? null
@@ -620,8 +620,9 @@ function CoveragePanel({ info }: { info: Overview }) {
       <div>
         <h2>Data confidence starts with coverage</h2>
         <p>
-          Collection status for each source. Partial results are a sample, never
-          a repository total.
+          Collection status for each source. Partial means collection stopped
+          before all records were fetched. Counts are a sample, never a
+          repository total.
         </p>
       </div>
       <div className="coverage-grid">
@@ -772,7 +773,11 @@ function Details({ info }: { info: Overview }) {
                 </tbody>
               </table>
             </div>
-            <p className="scope">{trends.data.limitation}</p>
+            <p className="scope">
+              Different collection scopes can change counts without a real
+              change in activity. Compare snapshots only when their coverage
+              matches. {trends.data.limitation}
+            </p>
             <div className="pagination">
               <span>
                 History page {historyPage} · {trends.data.points.length}{" "}
@@ -958,7 +963,7 @@ function Records({
             {kind === "ci"
               ? "Workflow results describe automated checks, not production availability."
               : kind === "pulls"
-                ? "PR age and time since update are separate signals. Drafts are excluded from attention rules."
+                ? "Open PRs include drafts. Attention excludes drafts and uses age or inactivity thresholds; it does not mean overdue."
                 : "Open issue observations. A “bug” label is a report, not a verified defect."}
           </p>
         </div>
@@ -1027,9 +1032,10 @@ function Records({
           <h3>Completed default-branch runs · 30-day collected window</h3>
           <Distribution values={info.metrics.ci_conclusions} />
           <p className="scope">
-            Denominator: {info.metrics.ci_completed} completed runs. In-progress
-            runs are excluded. Categories are not combined into success or
-            failure.
+            Zero failures means none found in this scope, not none ever. Success
+            share divides successful checks by {info.metrics.ci_completed}{" "}
+            completed runs. In-progress runs are excluded. Categories are not
+            combined into success or failure.
           </p>
         </div>
       )}
@@ -1137,10 +1143,15 @@ function Records({
                             <strong>{r.title ?? r.name}</strong>
                             <small>
                               {r.number ? `#${r.number}` : `Run ${r.github_id}`}
-                              {r.labels?.length
-                                ? ` · ${r.labels.map((l) => l.name).join(", ")}`
-                                : ""}
                             </small>
+                            {!!r.labels?.length && (
+                              <details className="record-metadata">
+                                <summary>
+                                  {r.labels.length} GitHub labels
+                                </summary>
+                                <p>{r.labels.map((l) => l.name).join(", ")}</p>
+                              </details>
+                            )}
                           </td>
                           <td data-label="State / branch">
                             {kind === "ci" ? (
@@ -1304,8 +1315,8 @@ function Risks({ info }: { info: Overview }) {
           <span className="eyebrow">PROJECT INTELLIGENCE BRIEF</span>
           <h2>What to review next</h2>
           <p>
-            Thresholds guide investigation; they do not establish a cause or
-            rank project quality.
+            Attention means a rule suggests checking an item, not a confirmed
+            serious problem. Thresholds do not rank project quality.
           </p>
         </div>
         <label>

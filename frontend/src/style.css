@@ -1897,3 +1897,16 @@ td:first-child {
     grid-column: 1/-1;
   }
 }
+.record-metadata {
+  max-width: 420px;
+  margin-top: 6px;
+}
+.record-metadata summary {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.record-metadata p {
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}

@@ -31,3 +31,7 @@ describe("Honest evidence presentation", () => {
     expect(timestamp(null)).toBe("Not yet observed");
   });
 });
+
+it("converts observation timestamps to WIB across the date boundary", () => {
+  expect(timestamp("2026-11-10T22:59:00Z")).toBe("11 Nov 2026, 05:59 WIB");
+});

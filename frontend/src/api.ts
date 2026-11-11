@@ -110,8 +110,8 @@ export function timestamp(value: string | null | undefined) {
     ? new Date(value).toLocaleString("en-GB", {
         dateStyle: "medium",
         timeStyle: "short",
-        timeZone: "UTC",
-      }) + " UTC"
+        timeZone: "Asia/Jakarta",
+      }) + " WIB"
     : "Not yet observed";
 }
 export function age(value: string | undefined, observed: string | null) {
