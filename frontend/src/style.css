@@ -2085,3 +2085,204 @@ td:first-child {
 .executive-insight small {
   color: #40566b;
 }
+/* Reference composition: primary facts visible, explanation on demand. */
+main {
+  max-width: 1300px;
+  padding: 22px 28px 0;
+}
+.page-heading h1 {
+  font-size: 25px;
+}
+.page-heading > p {
+  font-size: 12px;
+}
+.section-heading {
+  margin-bottom: 12px;
+}
+.section-heading p {
+  display: none;
+}
+.view-overview .section-heading h2 {
+  font-size: 14px;
+}
+.executive-insight {
+  background: transparent;
+  border: 0;
+  margin: 0 0 10px;
+  padding: 0;
+  font-size: 12px;
+}
+.executive-insight[open] {
+  padding: 14px;
+  background: #edf5fb;
+}
+.executive-insight .eyebrow {
+  display: none;
+}
+.executive-insight h2 {
+  font-size: 18px;
+}
+.metric {
+  padding: 14px;
+}
+.metric strong {
+  font-size: 30px;
+  margin: 12px 0 0;
+}
+.metric small {
+  display: none;
+}
+.metric:has(strong) {
+  min-height: 100px;
+}
+.view-overview .metrics {
+  gap: 12px;
+  background: transparent;
+  border: 0;
+}
+.view-overview .metric {
+  border: 1px solid #e0e7ef;
+  border-radius: 6px;
+  padding: 14px;
+}
+.compact-scope {
+  margin: 10px 0 16px;
+  font-size: 11px;
+}
+.compact-scope p {
+  margin-top: 8px;
+}
+.page-insight {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 10px 0 16px;
+  font-size: 12px;
+}
+.page-insight > strong {
+  display: block;
+  margin-top: 10px;
+}
+.coverage-panel {
+  padding: 12px 16px;
+  font-size: 12px;
+}
+.coverage-panel > div {
+  margin-top: 12px;
+}
+.overview-grid {
+  margin-top: 10px;
+}
+.view-overview .overview-grid {
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+}
+.preview-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  padding: 14px 0;
+  gap: 6px 12px;
+}
+.preview-item h3 {
+  font-size: 13px;
+  margin: 0 0 5px;
+}
+.preview-item p {
+  font-size: 12px;
+  line-height: 1.5;
+}
+.preview-item > details {
+  grid-column: 1/-1;
+  grid-row: auto;
+  margin-top: 4px;
+}
+.preview-item > .evidence {
+  align-self: start;
+}
+.findings-list {
+  margin-top: 4px;
+}
+.overview-grid .panel {
+  min-height: 320px;
+}
+.overview-grid .vertical-chart {
+  height: 220px;
+}
+.view-risks .brief-intro {
+  padding: 0 0 12px;
+}
+.brief-intro h2 {
+  font-size: 14px;
+}
+.brief-intro p {
+  display: none;
+}
+.rule-group .group-action {
+  font-size: 12px;
+  line-height: 1.5;
+}
+.rule-group .finding h3 {
+  font-size: 12px;
+}
+.details-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+.details-grid h3,
+.details-grid p {
+  font-size: 13px;
+}
+.filters {
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.filters input,
+.filters select {
+  padding: 8px 10px;
+}
+td {
+  padding: 9px 10px;
+}
+.footer {
+  font-size: 10px;
+  padding: 14px 0;
+  margin-top: 16px;
+}
+@media (max-width: 700px) {
+  main {
+    padding: 16px 12px 0;
+  }
+  .page-heading h1 {
+    font-size: 21px;
+  }
+  .page-heading > p {
+    display: none;
+  }
+  .view-overview .overview-grid {
+    grid-template-columns: 1fr;
+  }
+  .overview-grid .panel {
+    min-height: 0;
+  }
+  .details-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .metric strong {
+    font-size: 27px;
+  }
+  .last-sync {
+    font-size: 11px;
+  }
+  .project-toolbar {
+    gap: 8px;
+  }
+  .preview-item {
+    grid-template-columns: 1fr auto;
+  }
+  .preview-item > details {
+    grid-row: auto;
+  }
+}
+.metric small.unavailable-label {
+  display: block;
+}

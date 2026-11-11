@@ -128,7 +128,9 @@ export function Metric({
         </span>
       </div>
       <strong>{value ?? "—"}</strong>
-      <small>{value == null ? "Data unavailable" : "Items analyzed"}</small>
+      <small className={value == null ? "unavailable-label" : undefined}>
+        {value == null ? "Data unavailable" : "Items analyzed"}
+      </small>
     </article>
   );
 }
@@ -540,7 +542,8 @@ function OverviewPage({ info, suffix }: { info: Overview; suffix: string }) {
           }
         />
       </div>
-      <section className="executive-insight key-findings">
+      <details className="executive-insight key-findings">
+        <summary>Key insight & suggested review</summary>
         <span className="eyebrow">EXECUTIVE INSIGHT · CURRENT OBSERVATION</span>
         {keyFindings(info)
           .slice(0, 1)
@@ -561,7 +564,7 @@ function OverviewPage({ info, suffix }: { info: Overview; suffix: string }) {
         {!keyFindings(info).length && (
           <p>Insufficient data for a quantitative conclusion.</p>
         )}
-      </section>
+      </details>
       <div className="metrics">
         <Metric
           label="Open issues"
@@ -569,12 +572,12 @@ function OverviewPage({ info, suffix }: { info: Overview; suffix: string }) {
           help="An issue tracks a report or request. Pull requests are excluded."
         />
         <Metric
-          label="Open pull requests"
+          label="Open PRs"
           value={m?.open_prs}
           help="A pull request proposes a code change. Drafts are included in open PRs. Counts cover collected records."
         />
         <Metric
-          label="PRs needing attention"
+          label="Needs review"
           value={m?.prs_needing_attention}
           help={`Non-draft PRs older than ${info.policy.pr_age_days} days or not updated for ${info.policy.pr_idle_days} days.`}
         />
@@ -588,10 +591,10 @@ function OverviewPage({ info, suffix }: { info: Overview; suffix: string }) {
           help={`CI means automated checks. Denominator: ${m?.ci_completed ?? "unavailable"} completed default-branch runs in the collected 30-day window.`}
         />
       </div>
-      <p className="scope">
-        <CircleHelp size={14} />
-        {info.scope}
-      </p>
+      <details className="compact-scope">
+        <summary>Items analyzed · scope & definitions</summary>
+        <p>{info.scope}</p>
+      </details>
       <div className="overview-grid">
         <section className="panel">
           <div className="panel-heading">
@@ -614,32 +617,27 @@ function OverviewPage({ info, suffix }: { info: Overview; suffix: string }) {
             <Empty detail="Once GitHub data is collected, evidence-backed observations will appear here. No scores or estimates are substituted." />
           ) : findings.data?.length ? (
             <div className="findings-list">
-              {Array.from(
-                new Set(
-                  findings.data.map((f) => `${f.rule_id}|${f.recommendation}`),
-                ),
-              )
-                .slice(0, 3)
-                .map((key) => {
-                  const related = findings.data!.filter(
-                    (f) => `${f.rule_id}|${f.recommendation}` === key,
-                  );
-                  return (
-                    <article className="finding review-group" key={key}>
-                      <h3>
-                        {related.length} items ·{" "}
-                        {related[0].rule_id.replaceAll("_", " ")}
-                      </h3>
-                      <p>{related[0].recommendation}</p>
-                      <Evidence url={related[0].evidence_url}>
-                        Example evidence
-                      </Evidence>
-                      <NavLink className="evidence" to={`/risks${suffix}`}>
-                        Review related items <ArrowRight size={14} />
-                      </NavLink>
-                    </article>
-                  );
-                })}
+              {findings.data.slice(0, 3).map((f, i) => (
+                <article className="finding preview-item" key={i}>
+                  <div>
+                    <h3>
+                      {f.subject_type === "pull_request" ||
+                      f.rule_id === "pr_age"
+                        ? "PR"
+                        : f.subject_type}{" "}
+                      #{f.observation.match(/#(\d+)/)?.[1] ?? f.subject_id}
+                    </h3>
+                    <p>{f.observation}</p>
+                  </div>
+                  <Evidence url={f.evidence_url}>Evidence</Evidence>
+                  <details>
+                    <summary>Review details</summary>
+                    <p>{f.explanation}</p>
+                    <p>{f.recommendation}</p>
+                    <p>{f.limitations}</p>
+                  </details>
+                </article>
+              ))}
             </div>
           ) : (
             <Empty
@@ -668,7 +666,8 @@ function OverviewPage({ info, suffix }: { info: Overview; suffix: string }) {
 }
 function CoveragePanel({ info }: { info: Overview }) {
   return (
-    <section className="panel coverage-panel">
+    <details className="panel coverage-panel">
+      <summary>Data Quality · coverage & methodology</summary>
       <div>
         <h2>Data Quality</h2>
         <p>Partial coverage means some items may be missing.</p>
@@ -705,7 +704,7 @@ function CoveragePanel({ info }: { info: Overview }) {
           ))}
         </div>
       </details>
-    </section>
+    </details>
   );
 }
 async function collectedPages(path: string): Promise<Page> {
@@ -794,7 +793,8 @@ function Details({ info }: { info: Overview }) {
           help="All milestones in the stored observation, before your filters."
         />
       </div>
-      <div className="page-insight">
+      <details className="page-insight">
+        <summary>Analysis & review guidance</summary>
         <strong>
           {info.observed_at
             ? "Source coverage determines which comparisons are meaningful."
@@ -807,7 +807,7 @@ function Details({ info }: { info: Overview }) {
             can change counts without a real change in activity.
           </p>
         </details>
-      </div>
+      </details>
       <div className="panel details-grid">
         <div>
           <small>REPOSITORY</small>
@@ -1025,7 +1025,8 @@ function Details({ info }: { info: Overview }) {
 function PageInsight({ info, source }: { info: Overview; source: string }) {
   const finding = keyFindings(info).find((f) => f.source === source);
   return (
-    <div className="page-insight">
+    <details className="page-insight">
+      <summary>Analysis & review guidance</summary>
       <strong>
         {finding?.title ?? "Insufficient data for a quantitative summary."}
       </strong>
@@ -1037,7 +1038,7 @@ function PageInsight({ info, source }: { info: Overview; source: string }) {
           <small>{finding.sample}</small>
         </details>
       )}
-    </div>
+    </details>
   );
 }
 function Records({
@@ -1091,12 +1092,12 @@ function Records({
       {kind === "pulls" && (
         <div className="metrics pr-metrics">
           <Metric
-            label="Open pull requests"
+            label="Open PRs"
             value={info.metrics?.open_prs}
             help="Open proposed changes in collected records."
           />
           <Metric
-            label="Draft pull requests"
+            label="Draft PRs"
             value={
               pullSummary.data && pullSummary.data.coverage !== "unavailable"
                 ? pullSummary.data.items.filter((r) => r.draft).length
@@ -1105,7 +1106,7 @@ function Records({
             help="Drafts in collected records; excluded from attention rules."
           />
           <Metric
-            label="PRs needing attention"
+            label="Needs review"
             value={info.metrics?.prs_needing_attention}
             help="Configured age or inactivity threshold; does not mean overdue."
           />
@@ -1440,7 +1441,8 @@ function Risks({ info }: { info: Overview }) {
           )}
         </div>
       )}
-      <div className="page-insight">
+      <details className="page-insight">
+        <summary>Analysis & review guidance</summary>
         <strong>
           {brief.data
             ? `${brief.data.findings.length} rule-based findings are available for review; they are not confirmed business risks.`
@@ -1454,7 +1456,7 @@ function Risks({ info }: { info: Overview }) {
             High/Medium/Low scale is inferred.
           </p>
         </details>
-      </div>
+      </details>
       <div className="brief-intro">
         <div>
           <span className="eyebrow">PROJECT INTELLIGENCE BRIEF</span>
